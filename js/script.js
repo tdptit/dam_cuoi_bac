@@ -151,14 +151,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 5. FLOATING BLESSINGS (SỔ LƯU BÚT BAY)
+    // 5. TIKTOK LIVE CONTINUOUS STREAMING BLESSINGS (1/6 GÓC TRÁI MÀN HÌNH)
     // ----------------------------------------------------
     const defaultBlessings = [
-        { name: "Linh", text: "✨ Đồng tâm đồng lòng, xây đắp tổ ấm thịnh vượng!" },
-        { name: "Hà", text: "Chúc mừng hạnh phúc hai bạn!" },
-        { name: "Huy", text: "Chúc hai bạn trăm năm hạnh phúc!" },
-        { name: "Chanh", text: "Chúc mừng hạnh phúc trăm năm!" },
-        { name: "Chinh", text: "Mãi mãi bên nhau và thật hạnh phúc nhé!" }
+        { name: "Linh", text: "Trăm năm hạnh phúc, vạn sự cát tường! ✨" },
+        { name: "Hà", text: "Chúc mừng hạnh phúc hai bạn! Sớm sinh quý tử nha 🥰" },
+        { name: "Huy", text: "Cặp đôi đẹp nhất năm, mãi ngọt ngào nhé! 💖" },
+        { name: "Chanh", text: "Chúc mừng ngày vui của Đức & Hà! 🥂" },
+        { name: "Chinh", text: "Đồng tâm đồng lòng xây dựng tổ ấm thịnh vượng 💐" },
+        { name: "Bác Tuấn", text: "Chúc hai cháu trăm năm tình viên mãn, đầu bạc răng long!" },
+        { name: "Lan Anh", text: "Cô dâu chú rể đẹp đôi quá, chúc hai bạn viên mãn 🌹" },
+        { name: "Minh Quân", text: "Mừng đám cưới Đức & Hà, chúc trăm năm hạnh phúc! 🎉" },
+        { name: "Hồng Nhung", text: "Luôn nắm tay nhau đi đến cuối con đường hạnh phúc nhé!" },
+        { name: "Tuấn Kiệt", text: "Chúc hai bạn mãi mãi yêu thương và thấu hiểu nhau ❤️" },
+        { name: "Phương Thảo", text: "Chúc gia đình nhỏ luôn ngập tràn tiếng cười và niềm vui!" },
+        { name: "Anh Thư", text: "Hôn nhân ngọt ngào, cuộc sống thịnh vượng nhé hai bạn! 👶" }
     ];
 
     // Load extra blessings from localStorage if any
@@ -170,34 +177,79 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const allBlessings = [...storedBlessings, ...defaultBlessings];
     const blessingContainer = document.getElementById('blessing-msg-list');
-    let blessingIndex = 0;
+    let track = null;
 
-    // Hiển thị từng tin nhắn trôi lên — mỗi 3.5s một tin mới pop từ dưới lên
-    const BLESSING_CYCLE = 3500; // ms mỗi tin
-    const BLESSING_ANIM_DURATION = 7;  // seconds (phải khớp với CSS --blessing-duration)
-
-    function spawnOneBlessing() {
-        if (!blessingContainer) return;
-        const b = allBlessings[blessingIndex % allBlessings.length];
-        blessingIndex++;
-        if (!b) return;
-
-        const div = document.createElement('div');
-        div.className = 'blessing-msg';
-        div.style.setProperty('--blessing-duration', BLESSING_ANIM_DURATION + 's');
-        div.innerHTML = `<strong>${escapeHtml(b.name)}</strong>: ${escapeHtml(b.text)}`;
-        blessingContainer.appendChild(div);
-
-        // Xóa sau khi animation kết thúc
-        setTimeout(() => {
-            if (div.parentNode) div.parentNode.removeChild(div);
-        }, BLESSING_ANIM_DURATION * 1000 + 100);
+    if (blessingContainer) {
+        track = document.getElementById('blessing-stream-track');
+        if (!track) {
+            track = document.createElement('div');
+            track.id = 'blessing-stream-track';
+            blessingContainer.appendChild(track);
+        }
     }
 
-    // Giữ tối đa 3 tin nhắn cùng lúc, pop mới mỗi BLESSING_CYCLE
-    spawnOneBlessing();
-    setTimeout(spawnOneBlessing, 1200);
-    setInterval(spawnOneBlessing, BLESSING_CYCLE);
+    let blessingIndex = 0;
+
+    function createBlessingElement(name, text, isUser = false) {
+        const div = document.createElement('div');
+        div.className = 'blessing-msg' + (isUser ? ' is-user' : '');
+        div.innerHTML = `<strong>${escapeHtml(name)}:</strong><span class="blessing-text">${escapeHtml(text)}</span>`;
+        return div;
+    }
+
+    function appendNextBlessing(isUser = false, customName = '', customText = '') {
+        if (!track || !allBlessings.length) return;
+        let name, text;
+        if (isUser && customText) {
+            name = customName;
+            text = customText;
+        } else {
+            const item = allBlessings[blessingIndex % allBlessings.length];
+            blessingIndex++;
+            name = item.name;
+            text = item.text;
+        }
+        const el = createBlessingElement(name, text, isUser);
+        track.appendChild(el);
+    }
+
+    // Pre-fill track with 5 items so 3-4 items are immediately visible and drifting smoothly
+    if (track) {
+        for (let i = 0; i < 5; i++) {
+            appendNextBlessing();
+        }
+    }
+
+    // Continuous 60fps drift loop (like TikTok Live comment stream)
+    let trackY = 0;
+    const DRIFT_SPEED = 22; // 22px / second: steady, gentle, comfortable reading speed
+    let lastDriftTime = performance.now();
+
+    function animateBlessingStream(now) {
+        if (!track) return;
+        const dt = Math.min((now - lastDriftTime) / 1000, 0.05);
+        lastDriftTime = now;
+
+        trackY += DRIFT_SPEED * dt;
+
+        const firstChild = track.firstElementChild;
+        if (firstChild) {
+            const gap = 6;
+            const itemFullHeight = firstChild.offsetHeight + gap;
+            if (trackY >= itemFullHeight) {
+                trackY -= itemFullHeight;
+                track.removeChild(firstChild);
+                appendNextBlessing();
+            }
+        }
+
+        track.style.transform = `translate3d(0, -${trackY.toFixed(2)}px, 0)`;
+        requestAnimationFrame(animateBlessingStream);
+    }
+
+    if (track) {
+        requestAnimationFrame(animateBlessingStream);
+    }
 
     // ----------------------------------------------------
     // 6. MODAL UTILITIES (SHOW / HIDE)
@@ -307,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('wedding_blessings', JSON.stringify(storedBlessings));
             } catch(e) {}
 
-            renderFloatingBlessings();
+            appendNextBlessing(true, name, text);
             closeModal('blessing-modal');
             showToast('Cảm ơn bạn đã gửi lời chúc ý nghĩa! 💕');
             burstHearts(window.innerWidth / 2, window.innerHeight / 2, 20);
