@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thiệp Cưới 221 Pre</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <main class="invitation-panel">
+        <div class="panel-top">
+          <button class="mini-toggle" aria-label="toggle music">
+            <span class="dot"></span>
+          </button>
+        </div>
+
+        <div class="card-stage">
+          <div class="photo-frame">
+            <div class="photo-overlay"></div>
+            <img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=900&q=80" alt="Cặp đôi" />
+
+            <div class="envelope-box">
+              <div class="envelope">
+                <div class="envelope-flap"></div>
+                <div class="letter-paper">
+                  <div class="seal"><span>✦</span></div>
+                  <div class="signature">
+                    <span>Minh Đức</span>
+                    <span class="and">&amp;</span>
+                    <span>Thu Hà</span>
+                  </div>
+                  <div class="we-become">WE WILL BECOME</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button class="tool-btn like-btn"><span class="icon">♡</span><strong>0</strong></button>
+          <button class="tool-btn comment-btn"><span class="icon">◌</span><strong>5</strong></button>
+          <button class="tool-btn gift-btn"><span class="icon">🎁</span><span>Quà mừng</span></button>
+          <button class="tool-btn attend-btn"><span class="icon">✦</span><span>Tham dự</span></button>
+          <button class="tool-btn share-btn"><span class="icon">⇪</span><span>Chia sẻ</span></button>
+          <button class="tool-btn phone-btn"><span class="icon">📱</span><span>Điện thoại</span></button>
+        </div>
+
+        <div class="scroll-controls">
+          <button class="scroll-up" aria-label="Cuộn lên">⌃</button>
+          <button class="scroll-down" aria-label="Cuộn xuống">⌄</button>
+        </div>
+      </main>
+
+      <aside class="comment-sidebar">
+        <div class="tab-header">
+          <button class="tab active">Lời chúc</button>
+          <button class="tab">Xem trên điện thoại</button>
+        </div>
+
+        <div class="messages-wrap">
+          <h3>5 lời chúc</h3>
+          <div class="message-list">
+            <div class="message-item">
+              <div class="avatar">L</div>
+              <div class="message-body">
+                <h4>Linh</h4>
+                <p>✨ Đồng tâm đồng lòng, xây đắp tổ ấm thịnh vượng!</p>
+                <time>37 phút trước</time>
+              </div>
+            </div>
+            <div class="message-item">
+              <div class="avatar alt">H</div>
+              <div class="message-body">
+                <h4>Hà</h4>
+                <p>Chúc mừng hạnh phúc!</p>
+                <time>một giờ trước</time>
+              </div>
+            </div>
+            <div class="message-item">
+              <div class="avatar alt2">H</div>
+              <div class="message-body">
+                <h4>Huy</h4>
+                <p>Chúc hai bạn trăm năm hạnh phúc!</p>
+                <time>2 giờ trước</time>
+              </div>
+            </div>
+            <div class="message-item">
+              <div class="avatar alt3">C</div>
+              <div class="message-body">
+                <h4>Chanh</h4>
+                <p>Chúc mừng hạnh phúc trăm năm!</p>
+                <time>2 giờ trước</time>
+              </div>
+            </div>
+            <div class="message-item">
+              <div class="avatar alt4">C</div>
+              <div class="message-body">
+                <h4>Chinh</h4>
+                <p>Chúc hai bạn trăm năm hạnh phúc!</p>
+                <time>3 giờ trước</time>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="countdown-box">
+          <div class="countdown" aria-live="polite"></div>
+        </div>
+
+        <div class="composer">
+          <textarea placeholder="Tên của bạn"></textarea>
+          <button>Gửi lời chúc</button>
+        </div>
+      </aside>
+    </div>
+
+    <audio id="bg-music" loop>
+      <source src="https://cdn-music.zenlove.me/mp3/canon-in-d-1761882740298-vc12bagl.mp3" type="audio/mpeg" />
+    </audio>
+
+    <script src="script.js"></script>
+  </body>
+</html>
