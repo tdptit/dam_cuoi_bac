@@ -49,6 +49,14 @@ body {
     width: 500px;
     transform-origin: 0 0;
     transform: scale(var(--page-scale, 1));
+    opacity: 0;
+    filter: blur(10px);
+    transition: opacity 0.9s ease, filter 0.9s ease;
+}
+
+body.wedding-ready #page-root-container {
+    opacity: 1;
+    filter: blur(0);
 }
 
 /* Animations for scroll-in elements (GPU Optimized) */
@@ -617,14 +625,45 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(15, 10, 10, 0.88);
-    backdrop-filter: blur(6px);
+    background: linear-gradient(180deg, #981f2a 0%, #5d071a 100%);
     z-index: 15000;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    opacity: 1;
+    visibility: visible;
     transition: opacity 0.8s ease, visibility 0.8s ease;
+    overflow: hidden;
+}
+
+.envelope-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        135deg,
+        rgba(255,255,255,0.04) 0,
+        rgba(255,255,255,0.04) 2px,
+        transparent 2px,
+        transparent 14px
+    );
+    opacity: 0.6;
+}
+
+.envelope-overlay.is-opening {
+    opacity: 1;
+    visibility: visible;
+}
+
+.envelope-overlay.is-opening .envelope-card {
+    animation: envelopeCardOpen 1.8s cubic-bezier(0.18, 0.76, 0.24, 1) forwards;
+}
+
+.envelope-overlay.is-closing {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.8s ease, visibility 0s linear 0.8s;
 }
 
 .envelope-overlay.opened {
@@ -633,19 +672,38 @@ body {
     pointer-events: none;
 }
 
+@keyframes envelopeCardOpen {
+    0% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    30% {
+        opacity: 1;
+        transform: translate3d(0, -18px, 0) scale(1.01);
+    }
+    65% {
+        opacity: 1;
+        transform: translate3d(0, -70px, 0) scale(1.02);
+    }
+    100% {
+        opacity: 0;
+        transform: translate3d(0, -160px, 0) scale(0.96);
+    }
+}
+
 .envelope-card {
-    width: min(88%, 380px);
-    background: #6c0a23;
-    background: linear-gradient(135deg, #780d29 0%, #520218 100%);
-    border: 2px solid #c5a059;
-    border-radius: 16px;
-    padding: 36px 24px;
-    text-align: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
     position: relative;
+    width: min(86vw, 380px);
+    background: #f4efe9;
+    border: 1px solid rgba(125, 73, 62, 0.4);
+    border-radius: 18px;
+    padding: 24px 22px 28px;
+    text-align: center;
+    box-shadow: 0 16px 34px rgba(32, 2, 8, 0.34);
     cursor: pointer;
-    transform: translateY(0);
-    transition: transform 0.4s ease;
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
 .envelope-card:hover {
@@ -656,46 +714,596 @@ body {
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    background: radial-gradient(circle, #e2c178 0%, #b8860b 100%);
-    box-shadow: 0 6px 20px rgba(184, 134, 11, 0.4);
-    margin: 0 auto 20px;
+    background: linear-gradient(180deg, #7d1028 0%, #560a1d 100%);
+    box-shadow: 0 7px 18px rgba(80, 13, 23, 0.28);
+    margin: 0 auto 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
+    color: #fff;
+    position: relative;
+    z-index: 1;
 }
 
-.envelope-title {
-    color: #ffffff;
-    font-size: 26px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    letter-spacing: 1px;
+.envelope-badge svg {
+    width: 30px;
+    height: 30px;
+    display: block;
 }
 
-.envelope-subtitle {
-    color: #e5c38c;
+.envelope-wrap-lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.envelope-wrap-lines::before,
+.envelope-wrap-lines::after {
+    content: "";
+    position: absolute;
+    width: 120px;
+    height: 70px;
+    border: 2px solid rgba(105, 17, 32, 0.65);
+    border-color: rgba(110, 26, 38, 0.7) transparent transparent transparent;
+    border-radius: 50% 50% 0 0;
+    top: 36px;
+    transform-origin: center;
+}
+
+.envelope-wrap-lines::before {
+    left: 22px;
+    transform: rotate(-18deg) scaleX(1.3);
+}
+
+.envelope-wrap-lines::after {
+    right: 22px;
+    transform: rotate(18deg) scaleX(1.3);
+}
+
+.envelope-names {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin: 18px 0 12px;
+    color: #5e0d1c;
+    font-family: "High Spirited", "Briygada", Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+}
+
+.envelope-names span {
+    display: block;
+    font-size: clamp(27px, 6vw, 38px);
+}
+
+.ampersand {
+    font-size: clamp(26px, 5vw, 32px) !important;
+    transform: translateY(-2px);
+}
+
+.envelope-date {
+    position: relative;
+    z-index: 1;
+    color: #5a0d1b;
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 4px;
+    margin-bottom: 6px;
+}
+
+.envelope-invite {
+    position: relative;
+    z-index: 1;
+    color: #5a0d1b;
+    font-size: 20px;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.envelope-guest-tag {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(104, 14, 29, 0.18);
+    color: #4e0d1d;
+    border-radius: 10px;
+    padding: 10px 22px;
+    min-width: 200px;
     font-size: 15px;
-    margin-bottom: 24px;
+    font-weight: 700;
+    margin: 12px auto 8px;
+    box-shadow: inset 0 0 0 1px rgba(94, 13, 28, 0.12);
+}
+
+.envelope-text {
+    position: relative;
+    z-index: 1;
+    color: #4c0d1d;
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 auto 22px;
+    max-width: 280px;
     font-style: italic;
 }
 
 .envelope-open-btn {
-    background: radial-gradient(circle, #e6ca8a 0%, #c49942 100%);
-    color: #4a0316;
-    font-weight: bold;
-    font-size: 15px;
-    padding: 12px 28px;
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(180deg, #7a1027 0%, #5b071d 100%);
+    color: #fffaf7;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 15px 54px;
     border-radius: 30px;
-    border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    border: 1px solid rgba(96, 18, 29, 0.7);
+    box-shadow: 0 8px 16px rgba(49, 9, 19, 0.2);
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    font-family: "Lora Regular", Georgia, serif;
 }
 
-.envelope-open-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(230, 202, 138, 0.4);
+#miuOpening {
+    position: fixed;
+    inset: 0;
+    z-index: 15000;
+    display: block;
+    background: linear-gradient(180deg, #981f2a 0%, #5d071a 100%);
+    overflow: hidden;
+}
+
+.miu-opening-hearts {
+    position: absolute;
+    inset: -8% -4%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.miu-opening-heart {
+    position: absolute;
+    top: -10%;
+    left: 0;
+    width: var(--size, 12px);
+    height: var(--size, 12px);
+    opacity: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='rgba(255,255,255,0.8)' d='M16 29.4C14.1 27.8 2.5 19.7 2.5 10.2C2.5 6.1 5.8 3 9.9 3c2.6 0 4.8 1.1 6.1 3.2C17.3 4.1 19.5 3 22.1 3c4.1 0 7.4 3.1 7.4 7.1c0 9.5-11.6 17.6-13.5 19.2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.12));
+    animation: openingHeartFall var(--duration, 10s) linear infinite;
+    animation-delay: var(--delay, 0s);
+}
+
+@keyframes openingHeartFall {
+    0% {
+        transform: translate3d(0, 0, 0) scale(0.7) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.7;
+    }
+    60% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate3d(var(--drift, 0px), 110vh, 0) scale(1.1) rotate(var(--spin, 30deg));
+        opacity: 0;
+    }
+}
+
+#miuOpening[data-open="0"] {
+    display: none;
+}
+
+#miuOpening * {
+    box-sizing: border-box;
+}
+
+#miuOpeningSides {
+    --cw: 420px;
+    --s: min(1, calc((100vw - 32px) / var(--cw)));
+    width: min(92vw, 420px);
+    height: min(74vh, 560px);
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 15001;
+    overflow: hidden;
+    border-radius: 24px;
+    box-shadow: 0 26px 55px rgba(36, 4, 12, 0.28);
+    border: 1px solid rgba(125, 73, 62, 0.35);
+    --slide-card-color: #f4efe8;
+    --slide-card-stripe-color: #772333;
+    --slide-card-stripe-size: 3.5%;
+    --slide-seal-size: 72px;
+    --slide-save-top: clamp(38px, 10%, 86px);
+    --slide-save-left: clamp(20px, 6%, 36px);
+    --slide-save-s-size: 68px;
+    --slide-save-color: rgba(92, 14, 28, 0.96);
+    --slide-save-opacity: 0.98;
+    --opening-names-color: rgba(92, 14, 28, 0.96);
+    --opening-and-color: rgba(92, 14, 28, 0.96);
+    --opening-invite-left: clamp(24px, 6vw, 38px);
+    --opening-invite-bottom: clamp(24px, 6vh, 48px);
+    --opening-invite-color: rgba(92, 14, 28, 0.92);
+}
+
+#miuOpeningSides._animating .card-side {
+    animation-play-state: running !important;
+}
+
+#miuOpeningSides.default .card-side {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
+
+#miuOpeningSides.default .card-side.left {
+    background:
+        radial-gradient(circle at 15% 15%, rgba(255,255,255,0.9), transparent 26%),
+        radial-gradient(circle at 85% 85%, rgba(174, 98, 92, 0.08), transparent 30%),
+        linear-gradient(180deg, #f8f2ee 0%, #f1e7e0 100%);
+    left: 0;
+    z-index: 1;
+    animation-name: miuOpeningSlideUp;
+    animation-duration: 1.5s;
+    animation-timing-function: cubic-bezier(0.16, 0.84, 0.22, 1);
+    animation-fill-mode: forwards;
+    animation-delay: 0.1s;
+    border-radius: 22px;
+    border: 1px solid rgba(125, 73, 62, 0.35);
+}
+
+#miuOpeningSides.default .card-side.left::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border-radius: 18px;
+    background:
+        repeating-linear-gradient(
+            135deg,
+            rgba(122, 67, 58, 0.02) 0,
+            rgba(122, 67, 58, 0.02) 2px,
+            transparent 2px,
+            transparent 12px
+        ),
+        linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0));
+    pointer-events: none;
+    border: 1px solid rgba(126, 76, 66, 0.08);
+}
+
+#miuOpeningSides.default .card-side.left::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgba(132, 66, 60, 0.04), transparent 18%, transparent 82%, rgba(132, 66, 60, 0.04));
+    pointer-events: none;
+}
+
+#miuOpeningSides .seal-icon {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translate(-50%, -50%);
+    width: var(--slide-seal-size, 72px);
+    height: var(--slide-seal-size, 72px);
+    border-radius: 50%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #7c0d26 0%, #5f0719 100%);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+}
+
+#miuOpeningBtn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+#miuOpeningBtn svg {
+    display: block;
+    width: 30px;
+    height: 30px;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+}
+
+#miuOpeningCta {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: clamp(26px, 6vh, 48px);
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    width: min(82%, 360px);
+    pointer-events: auto;
+}
+
+#miuOpeningCtaBtn {
+    appearance: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: 999px;
+    padding: 14px 26px;
+    border: 1px solid rgba(95, 16, 31, 0.25);
+    background: linear-gradient(180deg, #7a1027 0%, #5b071d 100%);
+    color: #fffaf7;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    font-size: 17px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    min-width: 200px;
+    min-height: 46px;
+    z-index: 4;
+    position: relative;
+    font-family: "Lora Regular", Georgia, serif;
+}
+
+#miuOpeningCtaBtn:active {
+    transform: translateY(1px);
+}
+
+#miuOpeningSides .card-side.left .wedding-save-the-date {
+    position: absolute;
+    top: var(--slide-save-top, 56px);
+    left: var(--slide-save-left, 28px);
+    font-size: clamp(34px, 7vw, 56px);
+    line-height: 1;
+    color: var(--slide-save-color, rgba(255, 255, 255, 0.96));
+    opacity: var(--slide-save-opacity, 0.98);
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 8px;
+    pointer-events: none;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+    z-index: 2;
+    font-family: "Dancing Script", "Lora", serif;
+    letter-spacing: 0.02em;
+}
+
+#miuOpeningSides .card-side.left .wedding-save-the-date span {
+    font-size: var(--slide-save-s-size, 70px);
+    line-height: 0.75;
+    transform: translateY(12px);
+}
+
+#miuOpeningSides .card-side.left .opening-decor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+#miuOpeningSides .card-side.left .opening-heart-badge {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #7d1028 0%, #5b071d 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 22px rgba(60, 8, 18, 0.22);
+    color: #fff;
+    animation: heartFloat 2.8s ease-in-out infinite;
+}
+
+#miuOpeningSides .card-side.left .opening-heart-badge::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 68%);
+    z-index: -1;
+}
+
+#miuOpeningSides .card-side.left .opening-heart-badge svg {
+    width: 26px;
+    height: 26px;
+    display: block;
+    transform-origin: center;
+    animation: heartPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes heartFloat {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+    50% {
+        transform: translateX(-50%) translateY(-4px) scale(1.04);
+    }
+}
+
+@keyframes heartPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.12);
+    }
+}
+
+#miuOpeningSides .card-side.left .opening-swoosh {
+    display: none;
+}
+
+#miuOpeningSides .card-side.left .opening-names {
+    position: absolute;
+    top: 110px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--opening-names-color, #ffffff);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    z-index: 2;
+    pointer-events: none;
+    text-align: center;
+    width: 78%;
+    animation: namesFadeUp 1.4s ease-out both;
+}
+
+#miuOpeningSides .card-side.left .opening-names .name {
+    font-family: "Dancing Script", "Lora", serif;
+    font-size: clamp(32px, 8vw, 52px);
+    line-height: 1.08;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    color: #5a0d1b;
+    font-style: italic;
+    font-weight: 600;
+    animation: nameSoftPulse 2.2s ease-in-out 0.2s infinite alternate;
+}
+
+#miuOpeningSides .card-side.left .opening-names .and {
+    font-family: "Georgia", serif;
+    font-style: italic;
+    font-size: clamp(28px, 6vw, 40px);
+    line-height: 0.9;
+    margin: 2px 0;
+    color: #5a0d1b;
+    transform: rotate(-5deg);
+    letter-spacing: 0.02em;
+    animation: nameSoftPulse 2.2s ease-in-out 0.4s infinite alternate;
+}
+
+@keyframes namesFadeUp {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+    40% {
+        opacity: 0.55;
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes nameSoftPulse {
+    0% {
+        opacity: 0.7;
+        filter: brightness(0.9);
+    }
+    100% {
+        opacity: 1;
+        filter: brightness(1.05);
+    }
+}
+
+#miuOpeningSides .card-side.left .opening-date {
+    position: absolute;
+    left: 50%;
+    top: 260px;
+    transform: translateX(-50%);
+    color: #5a0d1b;
+    font-size: 18px;
+    font-weight: 600;
+    z-index: 2;
+    pointer-events: none;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+}
+
+#miuOpeningSides .card-side.left .opening-invite {
+    position: absolute;
+    left: 50%;
+    top: 312px;
+    transform: translateX(-50%);
+    color: #5a0d1b;
+    font-size: 20px;
+    line-height: 1.2;
+    font-style: italic;
+    z-index: 2;
+    pointer-events: none;
+    letter-spacing: 0.02em;
+}
+
+#miuOpeningSides .card-side.left .opening-guest-tag {
+    position: absolute;
+    left: 50%;
+    top: 356px;
+    transform: translateX(-50%);
+    background: rgba(104, 14, 29, 0.14);
+    color: #4e0d1d;
+    border-radius: 12px;
+    padding: 10px 18px;
+    min-width: 220px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    z-index: 2;
+    box-shadow: inset 0 0 0 1px rgba(94, 13, 28, 0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#miuOpeningSides .card-side.left .opening-text {
+    position: absolute;
+    left: 50%;
+    top: 410px;
+    transform: translateX(-50%);
+    width: min(78%, 260px);
+    color: #4c0d1d;
+    font-size: 15px;
+    line-height: 1.5;
+    text-align: center;
+    font-style: italic;
+    z-index: 2;
+}
+
+@keyframes miuOpeningSlideUp {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    25% {
+        transform: translateY(-12vh) scale(1.01);
+        opacity: 1;
+    }
+    65% {
+        transform: translateY(-60vh) scale(1.02);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-120vh) scale(1.04);
+        opacity: 1;
+    }
 }
 
 /* ========================================================
@@ -870,7 +1478,105 @@ body {
         font-size: 13px;
     }
 
-    /* Envelope overlay */
+    /* Opening invitation overlay: keep button visible on phone */
+    #miuOpening {
+        background: linear-gradient(180deg, #981f2a 0%, #5d071a 100%);
+    }
+
+    #miuOpeningSides {
+        width: min(88vw, 360px);
+        height: min(70vh, 500px);
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 20px;
+    }
+
+    #miuOpeningSides.default .card-side.left {
+        animation-duration: 2.2s;
+        border-radius: 18px;
+    }
+
+    #miuOpeningSides .seal-icon {
+        width: 58px;
+        height: 58px;
+        left: 100%;
+        transform: translate(-50%, -50%);
+    }
+
+    #miuOpeningBtn svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    #miuOpeningCta {
+        bottom: 18px;
+        width: min(80%, 280px);
+    }
+
+    #miuOpeningCtaBtn {
+        min-width: 170px;
+        min-height: 42px;
+        padding: 12px 18px;
+        font-size: 15px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #miuOpeningSides .card-side.left .opening-heart-badge {
+        width: 48px;
+        height: 48px;
+        top: 12px;
+    }
+
+    #miuOpeningSides .card-side.left .opening-heart-badge svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    #miuOpeningSides .card-side.left .opening-swoosh {
+        width: 72px;
+        height: 52px;
+        top: 26px;
+    }
+
+    #miuOpeningSides .card-side.left .opening-names {
+        top: 76px;
+        width: 82%;
+    }
+
+    #miuOpeningSides .card-side.left .opening-names .name {
+        font-size: clamp(28px, 7vw, 36px);
+    }
+
+    #miuOpeningSides .card-side.left .opening-date {
+        top: 198px;
+        font-size: 14px;
+        white-space: normal;
+        text-align: center;
+        width: 72%;
+    }
+
+    #miuOpeningSides .card-side.left .opening-invite {
+        top: 238px;
+        font-size: 17px;
+    }
+
+    #miuOpeningSides .card-side.left .opening-guest-tag {
+        top: 280px;
+        min-width: 180px;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    #miuOpeningSides .card-side.left .opening-text {
+        top: 328px;
+        width: 78%;
+        font-size: 12.5px;
+        line-height: 1.4;
+    }
+
     .envelope-card {
         width: min(88%, 340px);
         padding: 30px 18px;

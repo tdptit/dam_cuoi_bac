@@ -72,23 +72,80 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     // 2. ENVELOPE OPENING OVERLAY
     // ----------------------------------------------------
-    const envelopeOverlay = document.getElementById('envelope-overlay');
-    const envelopeOpenBtn = document.getElementById('envelope-open-btn');
-    const envelopeCard = document.querySelector('.envelope-card');
+    const envelopeOverlay = document.getElementById('miuOpening');
+    const envelopeOpenBtn = document.getElementById('miuOpeningCtaBtn');
+    const envelopeCardBtn = document.getElementById('miuOpeningBtn');
+    const openingStage = document.getElementById('miuOpeningSides');
+    const openingHeartsLayer = document.getElementById('miuOpeningHearts');
+
+    function generateOpeningHearts() {
+        if (!openingHeartsLayer) return;
+
+        openingHeartsLayer.innerHTML = '';
+        const totalHearts = 42;
+
+        for (let i = 0; i < totalHearts; i++) {
+            const heart = document.createElement('span');
+            heart.className = 'miu-opening-heart';
+
+            const size = (6 + Math.random() * 11).toFixed(2);
+            const left = (Math.random() * 100).toFixed(2) + '%';
+            const duration = (8 + Math.random() * 10).toFixed(2) + 's';
+            const delay = (Math.random() * 7).toFixed(2) + 's';
+            const drift = (Math.random() * 90 - 45).toFixed(2) + 'px';
+            const spin = (Math.random() * 90 - 45).toFixed(2) + 'deg';
+
+            heart.style.setProperty('--size', size + 'px');
+            heart.style.left = left;
+            heart.style.setProperty('--duration', duration);
+            heart.style.setProperty('--delay', delay);
+            heart.style.setProperty('--drift', drift);
+            heart.style.setProperty('--spin', spin);
+
+            openingHeartsLayer.appendChild(heart);
+        }
+    }
+
+    generateOpeningHearts();
 
     function openEnvelope() {
-        if (envelopeOverlay) {
-            envelopeOverlay.classList.add('opened');
+        if (!envelopeOverlay || !openingStage || envelopeOverlay.getAttribute('data-open') === '0') {
+            return;
+        }
+
+        const sides = openingStage.querySelectorAll('.card-side');
+        let done = 0;
+
+        function finish() {
+            envelopeOverlay.setAttribute('data-open', '0');
+            envelopeOverlay.style.display = 'none';
+            document.body.classList.add('wedding-ready');
             playAudio();
             burstHearts(window.innerWidth / 2, window.innerHeight / 2, 25);
         }
+
+        if (!sides || !sides.length) {
+            finish();
+            return;
+        }
+
+        sides.forEach((side) => {
+            side.addEventListener('animationend', () => {
+                done += 1;
+                if (done >= sides.length) {
+                    finish();
+                }
+            }, { once: true });
+        });
+
+        openingStage.classList.add('_animating');
     }
 
     if (envelopeOpenBtn) {
         envelopeOpenBtn.addEventListener('click', openEnvelope);
     }
-    if (envelopeCard) {
-        envelopeCard.addEventListener('click', openEnvelope);
+    if (envelopeCardBtn) {
+        envelopeCardBtn.addEventListener('click', openEnvelope);
     }
 
     // ----------------------------------------------------

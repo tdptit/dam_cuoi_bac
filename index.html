@@ -38,17 +38,35 @@
     <div id="wedding-toast" class="wedding-toast">Đã sao chép!</div>
 
     <!-- Opening Envelope Greeting Overlay -->
-    <div id="envelope-overlay" class="envelope-overlay">
-        <div class="envelope-card">
-            <div class="envelope-badge">💌</div>
-            <div class="envelope-title">THIỆP CƯỚI</div>
-            <div class="envelope-subtitle">Minh Đức &amp; Thu Hà</div>
-            <p style="color: #f7e6ca; font-size: 14px; margin-bottom: 25px; line-height: 1.6;">
-                Trân trọng kính mời Quý Khách đến chung vui cùng gia đình chúng tôi vào ngày 26.12.2026
-            </p>
-            <button id="envelope-open-btn" class="envelope-open-btn">
-                CHẠM ĐỂ MỞ THIỆP ✨
-            </button>
+    <div class="miu-opening" id="miuOpening" data-open="1" aria-hidden="false">
+        <div id="miuOpeningHearts" class="miu-opening-hearts" aria-hidden="true"></div>
+        <div id="miuOpeningSides" class="default single-card" role="dialog" aria-modal="true">
+            <div class="card-side left">
+                <div class="opening-decor">
+                    <div class="opening-heart-badge">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 20.5c-1.4-1.1-8.5-6.2-8.5-11.3A4.8 4.8 0 0 1 8.3 4.4c1.7 0 3.2.8 4.1 2.1.9-1.3 2.4-2.1 4.1-2.1A4.8 4.8 0 0 1 21 9.2c0 5.1-7.1 10.2-9 11.3z" fill="currentColor"></path>
+                        </svg>
+                    </div>
+                    <div class="opening-swoosh opening-swoosh-left"></div>
+                    <div class="opening-swoosh opening-swoosh-right"></div>
+                </div>
+
+                <div class="opening-names">
+                    <div class="name">Đức Mạnh</div>
+                    <div class="and">&amp;</div>
+                    <div class="name">Lệ Quyên</div>
+                </div>
+
+                <div class="opening-date">29 tháng 12, 2026</div>
+                <div class="opening-invite">Kính mời</div>
+                <div class="opening-guest-tag">Bạn &amp; người thương</div>
+                <div class="opening-text">đến dự buổi tiệc chung vui cùng gia đình</div>
+
+                <div id="miuOpeningCta" aria-hidden="false">
+                    <button id="miuOpeningCtaBtn" type="button">Mở thiệp</button>
+                </div>
+            </div>
         </div>
     </div>
 
