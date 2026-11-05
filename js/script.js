@@ -187,18 +187,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. SCROLL-IN TRANSITIONS (INTERSECTION OBSERVER)
     // ----------------------------------------------------
     const transitionElements = document.querySelectorAll('[data-transition-key]');
+    const scrollContainer = document.querySelector('[data-invitation-scroll]');
     if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
-                    // once animated, keep visible
                     observer.unobserve(entry.target);
                 }
             });
         }, {
-            threshold: 0.02,
-            rootMargin: '50px 0px 50px 0px'
+            threshold: 0.12,
+            rootMargin: '0px 0px -8% 0px',
+            root: scrollContainer || null
         });
 
         transitionElements.forEach(el => observer.observe(el));
@@ -211,18 +212,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. TIKTOK LIVE CONTINUOUS STREAMING BLESSINGS (1/6 GÓC TRÁI MÀN HÌNH)
     // ----------------------------------------------------
     const defaultBlessings = [
-        { name: "Linh", text: "Trăm năm hạnh phúc, vạn sự cát tường! ✨" },
-        { name: "Hà", text: "Chúc mừng hạnh phúc hai bạn! Sớm sinh quý tử nha 🥰" },
-        { name: "Huy", text: "Cặp đôi đẹp nhất năm, mãi ngọt ngào nhé! 💖" },
-        { name: "Chanh", text: "Chúc mừng ngày vui của Đức & Hà! 🥂" },
-        { name: "Chinh", text: "Đồng tâm đồng lòng xây dựng tổ ấm thịnh vượng 💐" },
-        { name: "Bác Tuấn", text: "Chúc hai cháu trăm năm tình viên mãn, đầu bạc răng long!" },
-        { name: "Lan Anh", text: "Cô dâu chú rể đẹp đôi quá, chúc hai bạn viên mãn 🌹" },
-        { name: "Minh Quân", text: "Mừng đám cưới Đức & Hà, chúc trăm năm hạnh phúc! 🎉" },
-        { name: "Hồng Nhung", text: "Luôn nắm tay nhau đi đến cuối con đường hạnh phúc nhé!" },
-        { name: "Tuấn Kiệt", text: "Chúc hai bạn mãi mãi yêu thương và thấu hiểu nhau ❤️" },
-        { name: "Phương Thảo", text: "Chúc gia đình nhỏ luôn ngập tràn tiếng cười và niềm vui!" },
-        { name: "Anh Thư", text: "Hôn nhân ngọt ngào, cuộc sống thịnh vượng nhé hai bạn! 👶" }
+        { name: "Linh", text: "Chúc hai bạn trăm năm hạnh phúc! ✨" },
+        { name: "Hà", text: "Mãi yêu nhau, mãi ngọt ngào! 💖" },
+        { name: "Huy", text: "Tổ ấm ấm áp, cuộc sống luôn vui vẻ! 🥰" },
+        { name: "Chanh", text: "Đám cưới đẹp quá, chúc hai bạn thật hạnh phúc! 💐" },
+        { name: "Chinh", text: "Nụ cười của hai bạn đẹp lắm! 🌷" },
+        { name: "Tuấn", text: "Chúc cô dâu chú rể luôn đồng hành! 💞" },
+        { name: "Lan", text: "Sớm sinh quý tử nha! 👶" },
+        { name: "Bích", text: "Nhìn hai bạn thật xứng đôi! 🕊️" },
+        { name: "Quân", text: "Mãi yêu thương nhau, có nhiều niềm vui! 🎉" },
+        { name: "Yến", text: "Chúc ngày vui như mơ, hạnh phúc như mong đợi! 🌹" },
+        { name: "Nam", text: "Cuộc sống mới của hai bạn thật đẹp! 💑" },
+        { name: "Minh", text: "Yêu nhau rồi thì cùng nhau đi hết con đường! ❤️" },
+        { name: "Đạt", text: "Hạnh phúc trọn vẹn cho hai bạn! 🫶" },
+        { name: "Út", text: "Chúc luôn bình an và ngập tràn tiếng cười! 😊" },
+        { name: "Mai", text: "Tình yêu đẹp như trong phim! ✨" },
+        { name: "Khoa", text: "Chúc hai bạn thành công trong ngôi nhà mới! 🏡" },
+        { name: "Thảo", text: "Mãi là một cặp đôi hoàn hảo! 💘" },
+        { name: "Vân", text: "Hạnh phúc trăm năm thật là tuyệt vời! 💫" },
+        { name: "Dương", text: "Một ngày cưới đẹp như mơ! 🌷" },
+        { name: "Tú", text: "Cứ đi tiếp cùng nhau, hạnh phúc sẽ đến! 💖" },
+        { name: "Ngọc", text: "Chúc cả hai luôn nắm tay nhau! 🤍" }
     ];
 
     // Load extra blessings from localStorage if any
@@ -233,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(e) {}
 
     const allBlessings = [...storedBlessings, ...defaultBlessings];
+    const streamBlessings = [...allBlessings, ...allBlessings, ...allBlessings];
     const blessingContainer = document.getElementById('blessing-msg-list');
     let track = null;
 
@@ -255,13 +266,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function appendNextBlessing(isUser = false, customName = '', customText = '') {
-        if (!track || !allBlessings.length) return;
+        if (!track || !streamBlessings.length) return;
         let name, text;
         if (isUser && customText) {
             name = customName;
             text = customText;
         } else {
-            const item = allBlessings[blessingIndex % allBlessings.length];
+            const item = streamBlessings[blessingIndex % streamBlessings.length];
             blessingIndex++;
             name = item.name;
             text = item.text;
@@ -270,42 +281,11 @@ document.addEventListener('DOMContentLoaded', () => {
         track.appendChild(el);
     }
 
-    // Pre-fill track with 5 items so 3-4 items are immediately visible and drifting smoothly
+    // Pre-fill the track with repeated data so the comment stream looks full and continuous
     if (track) {
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 24; i++) {
             appendNextBlessing();
         }
-    }
-
-    // Continuous 60fps drift loop (like TikTok Live comment stream)
-    let trackY = 0;
-    const DRIFT_SPEED = 22; // 22px / second: steady, gentle, comfortable reading speed
-    let lastDriftTime = performance.now();
-
-    function animateBlessingStream(now) {
-        if (!track) return;
-        const dt = Math.min((now - lastDriftTime) / 1000, 0.05);
-        lastDriftTime = now;
-
-        trackY += DRIFT_SPEED * dt;
-
-        const firstChild = track.firstElementChild;
-        if (firstChild) {
-            const gap = 6;
-            const itemFullHeight = firstChild.offsetHeight + gap;
-            if (trackY >= itemFullHeight) {
-                trackY -= itemFullHeight;
-                track.removeChild(firstChild);
-                appendNextBlessing();
-            }
-        }
-
-        track.style.transform = `translate3d(0, -${trackY.toFixed(2)}px, 0)`;
-        requestAnimationFrame(animateBlessingStream);
-    }
-
-    if (track) {
-        requestAnimationFrame(animateBlessingStream);
     }
 
     // ----------------------------------------------------

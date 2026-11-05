@@ -62,14 +62,30 @@ body.wedding-ready #page-root-container {
 /* Animations for scroll-in elements (GPU Optimized) */
 [data-transition-key] {
     opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    transform: translate3d(0, 42px, 0) scale(0.985);
+    filter: blur(6px);
+    transition: opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1), transform 0.72s cubic-bezier(0.22, 1, 0.36, 1), filter 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform, filter;
 }
 
 [data-transition-key].is-visible {
     opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
+    transform: translate3d(0, 0, 0) scale(1) !important;
+    filter: blur(0) !important;
+    animation: revealUpSection 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes revealUpSection {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 42px, 0) scale(0.985);
+        filter: blur(6px);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(0);
+    }
 }
 
 /* Music Control Floating Button */
@@ -137,31 +153,44 @@ body.wedding-ready #page-root-container {
     left: max(12px, calc(50vw - 238px));
     width: 250px;
     max-width: calc(65vw - 10px);
-    height: 136px; /* Vừa vặn 3-4 tin nhắn cùng lúc */
+    height: 180px;
     z-index: 800;
     pointer-events: none;
     overflow: hidden;
-    /* Hiệu ứng mờ dần ở mép trên cùng chuẩn TikTok live */
-    -webkit-mask-image: linear-gradient(to top, black 65%, transparent 100%);
-    mask-image: linear-gradient(to top, black 65%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, black 75%, transparent 100%);
+    mask-image: linear-gradient(to top, black 75%, transparent 100%);
 }
 
 #blessing-stream-track {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     width: 100%;
     margin: 0;
     padding: 0;
     will-change: transform;
     transform: translate3d(0, 0, 0);
+    animation: blessingStream 5s linear infinite;
+}
+
+#blessing-stream-track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes blessingStream {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+    100% {
+        transform: translate3d(0, -75%, 0);
+    }
 }
 
 .blessing-msg {
     display: inline-flex;
     align-items: center;
     width: fit-content;
-    max-width: 100%;
+    max-width: 190px;
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -172,7 +201,7 @@ body.wedding-ready #page-root-container {
     font-size: 11.5px;
     line-height: 1.35;
     color: #333;
-    white-space: nowrap;
+    white-space: normal;
     overflow: hidden;
     text-overflow: ellipsis;
     box-sizing: border-box;
