@@ -23,8 +23,11 @@ document.addEventListener("DOMContentLoaded", () => {
     pageRoot.style.transformOrigin = "0 0";
 
     if (scrollContainer) {
+      const baseHeight = pageRoot.offsetHeight;
+      const scaledHeight = Math.ceil(baseHeight * scale);
       const viewportHeight =
         window.innerHeight || document.documentElement.clientHeight;
+      pageRoot.style.marginBottom = `${scaledHeight - baseHeight}px`;
       scrollContainer.style.height = `${viewportHeight}px`;
       scrollContainer.style.minHeight = `${viewportHeight}px`;
     }

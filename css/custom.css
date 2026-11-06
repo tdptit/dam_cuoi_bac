@@ -64,32 +64,24 @@ body.wedding-ready #page-root-container {
 /* Animations for scroll-in elements (GPU Optimized) */
 [data-transition-key] {
   opacity: 0;
-  transform: translate3d(0, 42px, 0) scale(0.985);
-  filter: blur(6px);
+  transform: translate3d(0, 14px, 0);
   transition:
-    opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.72s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.72s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform, filter;
+    opacity 0.55s ease-out,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
 
 [data-transition-key].is-visible {
   opacity: 1 !important;
-  transform: translate3d(0, 0, 0) scale(1) !important;
-  filter: blur(0) !important;
-  animation: revealUpSection 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform: translate3d(0, 0, 0) !important;
+  filter: none !important;
 }
 
-@keyframes revealUpSection {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 42px, 0) scale(0.985);
-    filter: blur(6px);
-  }
-  100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-    filter: blur(0);
+@media (prefers-reduced-motion: reduce) {
+  [data-transition-key],
+  [data-transition-key].is-visible {
+    transition: none;
+    transform: none !important;
   }
 }
 
