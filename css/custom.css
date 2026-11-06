@@ -145,67 +145,55 @@ body.wedding-ready #page-root-container {
 }
 
 /* ========================================================
-   TIKTOK LIVE STREAMING COMMENTS (1/6 GÓC TRÁI MÀN HÌNH)
-   ======================================================== */
+   TIKTOK LIVE COMMENTS - CONTINUOUS STREAM
+======================================================== */
+
 #blessing-msg-list {
     position: fixed;
     bottom: 74px;
     left: max(12px, calc(50vw - 238px));
     width: 250px;
-    max-width: calc(65vw - 10px);
-    height: 180px;
+    max-width: 65vw;
+    height: 238px;
     z-index: 800;
     pointer-events: none;
     overflow: hidden;
-    -webkit-mask-image: linear-gradient(to top, black 75%, transparent 100%);
-    mask-image: linear-gradient(to top, black 75%, transparent 100%);
 }
 
 #blessing-stream-track {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    position: relative;
     width: 100%;
-    margin: 0;
-    padding: 0;
-    will-change: transform;
-    transform: translate3d(0, 0, 0);
-    animation: blessingStream 5s linear infinite;
-}
-
-#blessing-stream-track:hover {
-    animation-play-state: paused;
-}
-
-@keyframes blessingStream {
-    0% {
-        transform: translate3d(0, 0, 0);
-    }
-    100% {
-        transform: translate3d(0, -75%, 0);
-    }
+    height: 100%;
 }
 
 .blessing-msg {
-    display: inline-flex;
+    display: flex;
     align-items: center;
+
+    height: 30px;
     width: fit-content;
     max-width: 190px;
+    box-sizing: border-box;
+
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+
     border: 1px solid rgba(197, 160, 89, 0.35);
     border-radius: 14px;
     padding: 4px 10px;
+
     box-shadow: 0 2px 8px rgba(93, 4, 30, 0.08);
+
     font-size: 11.5px;
     line-height: 1.35;
     color: #333;
-    white-space: normal;
+
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    box-sizing: border-box;
-    flex-shrink: 0;
+
+    will-change: transform, opacity;
 }
 
 .blessing-msg strong {
@@ -227,6 +215,22 @@ body.wedding-ready #page-root-container {
     box-shadow: 0 3px 10px rgba(197, 160, 89, 0.25);
 }
 
+@media (max-width: 500px) {
+    #blessing-msg-list {
+        bottom: calc(max(10px, env(safe-area-inset-bottom, 10px)) + 56px);
+        left: 10px;
+        width: 220px;
+        max-width: 58vw;
+        height: 142px;
+    }
+
+    .blessing-msg {
+        height: 30px;
+        font-size: 11px;
+        padding: 3.5px 9px;
+        border-radius: 13px;
+    }
+}
 /* Floating bottom toolbar */
 #zen-toolbar {
     position: fixed;
@@ -1386,14 +1390,21 @@ body.wedding-ready #page-root-container {
         left: 10px;
         width: 220px;
         max-width: 58vw;
-        height: 126px;
+        height: 142px;
     }
 
     #blessing-stream-track {
-        gap: 5px;
+        animation-duration: 12s;
+    }
+
+    .blessing-stream-group {
+        gap: 4px;
+        padding-bottom: 4px;
     }
 
     .blessing-msg {
+        height: 30px;
+        min-height: 30px;
         font-size: 11px;
         padding: 3.5px 9px;
         border-radius: 13px;
