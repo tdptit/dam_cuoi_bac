@@ -86,14 +86,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const invitationScroll = document.querySelector("[data-invitation-scroll]");
   let autoScrollFrameId = 0;
   let autoScrollLastTime = 0;
+  let autoScrollPaused = false;
+  let resumeOnNextClick = false;
+  let pointerStartX = 0;
+  let pointerStartY = 0;
   const autoScrollSpeed = 70;
 
-  function stopInvitationAutoScroll() {
+  function stopInvitationAutoScroll(paused = true) {
     if (!autoScrollFrameId) return;
 
     cancelAnimationFrame(autoScrollFrameId);
     autoScrollFrameId = 0;
     autoScrollLastTime = 0;
+    autoScrollPaused = paused;
     if (invitationScroll) {
       invitationScroll.setAttribute("data-auto-scrolling", "false");
     }
@@ -104,6 +109,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    const atBottom =
+      invitationScroll.scrollTop + invitationScroll.clientHeight >=
+      invitationScroll.scrollHeight - 1;
+    if (atBottom) {
+      autoScrollPaused = false;
+      return;
+    }
+
+    autoScrollPaused = false;
+    resumeOnNextClick = false;
     invitationScroll.setAttribute("data-auto-scrolling", "true");
 
     function scrollFrame(timestamp) {
@@ -118,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
         invitationScroll.scrollHeight - 1;
 
       if (atBottom) {
-        stopInvitationAutoScroll();
+        stopInvitationAutoScroll(false);
         return;
       }
 
@@ -129,13 +144,50 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (invitationScroll) {
-    invitationScroll.addEventListener("wheel", stopInvitationAutoScroll, {
-      passive: true,
+    invitationScroll.addEventListener(
+      "wheel",
+      () => {
+        stopInvitationAutoScroll();
+        resumeOnNextClick = false;
+      },
+      { passive: true },
+    );
+    invitationScroll.addEventListener("pointerdown", (event) => {
+      if (
+        event.target instanceof Element &&
+        event.target.closest(
+          "a, button, input, select, textarea, [role='button'], #zen-toolbar",
+        )
+      ) {
+        resumeOnNextClick = false;
+        return;
+      }
+
+      if (autoScrollFrameId) {
+        stopInvitationAutoScroll();
+        resumeOnNextClick = false;
+      } else if (autoScrollPaused) {
+        resumeOnNextClick = true;
+        pointerStartX = event.clientX;
+        pointerStartY = event.clientY;
+      }
     });
-    invitationScroll.addEventListener("touchstart", stopInvitationAutoScroll, {
-      passive: true,
+    invitationScroll.addEventListener("pointermove", (event) => {
+      if (
+        resumeOnNextClick &&
+        Math.abs(event.clientX - pointerStartX) +
+          Math.abs(event.clientY - pointerStartY) >
+          8
+      ) {
+        resumeOnNextClick = false;
+      }
     });
-    invitationScroll.addEventListener("pointerdown", stopInvitationAutoScroll);
+    invitationScroll.addEventListener("click", () => {
+      if (!autoScrollPaused || !resumeOnNextClick) return;
+
+      startInvitationAutoScroll();
+      resumeOnNextClick = false;
+    });
   }
 
   document.addEventListener("keydown", (event) => {
@@ -154,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
       )
     ) {
       stopInvitationAutoScroll();
+      resumeOnNextClick = false;
     }
   });
 
