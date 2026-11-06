@@ -16,18 +16,17 @@ document.addEventListener("DOMContentLoaded", () => {
       window.innerWidth || document.documentElement.clientWidth || 500;
     const availableWidth = Math.min(winWidth, 500);
     const baseWidth = 500;
-    const baseHeight = 7017;
-
     const scale = availableWidth / baseWidth;
     document.documentElement.style.setProperty("--page-scale", scale);
 
     pageRoot.style.transform = `scale(${scale})`;
     pageRoot.style.transformOrigin = "0 0";
 
-    const scaledHeight = Math.ceil(baseHeight * scale);
     if (scrollContainer) {
-      scrollContainer.style.height = `${scaledHeight}px`;
-      scrollContainer.style.minHeight = `${scaledHeight}px`;
+      const viewportHeight =
+        window.innerHeight || document.documentElement.clientHeight;
+      scrollContainer.style.height = `${viewportHeight}px`;
+      scrollContainer.style.minHeight = `${viewportHeight}px`;
     }
   }
 
@@ -81,6 +80,79 @@ document.addEventListener("DOMContentLoaded", () => {
   const envelopeCardBtn = document.getElementById("miuOpeningBtn");
   const openingStage = document.getElementById("miuOpeningSides");
   const openingHeartsLayer = document.getElementById("miuOpeningHearts");
+  const invitationScroll = document.querySelector("[data-invitation-scroll]");
+  let autoScrollFrameId = 0;
+  let autoScrollLastTime = 0;
+  const autoScrollSpeed = 70;
+
+  function stopInvitationAutoScroll() {
+    if (!autoScrollFrameId) return;
+
+    cancelAnimationFrame(autoScrollFrameId);
+    autoScrollFrameId = 0;
+    autoScrollLastTime = 0;
+    if (invitationScroll) {
+      invitationScroll.setAttribute("data-auto-scrolling", "false");
+    }
+  }
+
+  function startInvitationAutoScroll() {
+    if (!invitationScroll || autoScrollFrameId) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    invitationScroll.setAttribute("data-auto-scrolling", "true");
+
+    function scrollFrame(timestamp) {
+      if (!autoScrollLastTime) autoScrollLastTime = timestamp;
+
+      const elapsed = Math.min(timestamp - autoScrollLastTime, 100);
+      autoScrollLastTime = timestamp;
+      invitationScroll.scrollTop += (autoScrollSpeed * elapsed) / 1000;
+
+      const atBottom =
+        invitationScroll.scrollTop + invitationScroll.clientHeight >=
+        invitationScroll.scrollHeight - 1;
+
+      if (atBottom) {
+        stopInvitationAutoScroll();
+        return;
+      }
+
+      autoScrollFrameId = requestAnimationFrame(scrollFrame);
+    }
+
+    autoScrollFrameId = requestAnimationFrame(scrollFrame);
+  }
+
+  if (invitationScroll) {
+    invitationScroll.addEventListener("wheel", stopInvitationAutoScroll, {
+      passive: true,
+    });
+    invitationScroll.addEventListener("touchstart", stopInvitationAutoScroll, {
+      passive: true,
+    });
+    invitationScroll.addEventListener("pointerdown", stopInvitationAutoScroll);
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (
+      [
+        "ArrowDown",
+        "ArrowUp",
+        "PageDown",
+        "PageUp",
+        "Home",
+        "End",
+        " ",
+        "Enter",
+      ].includes(
+        event.key,
+      )
+    ) {
+      stopInvitationAutoScroll();
+    }
+  });
 
   function generateOpeningHearts() {
     if (!openingHeartsLayer) return;
@@ -130,6 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.classList.add("wedding-ready");
       playAudio();
       burstHearts(window.innerWidth / 2, window.innerHeight / 2, 25);
+      startInvitationAutoScroll();
     }
 
     if (!sides || !sides.length) {
