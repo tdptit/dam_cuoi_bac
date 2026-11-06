@@ -1398,6 +1398,114 @@ body.wedding-ready #page-root-container {
   }
 }
 
+@media (min-width: 501px) {
+  #miuOpeningSides {
+    height: min(84vh, 560px);
+  }
+
+  #miuOpeningSides.default .card-side.left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(4px, 1.3vh, 10px);
+    padding: clamp(60px, 12vh, 86px) 28px clamp(14px, 3vh, 24px);
+  }
+
+  #miuOpeningSides .card-side.left .opening-names,
+  #miuOpeningSides .card-side.left .opening-date,
+  #miuOpeningSides .card-side.left .opening-invite,
+  #miuOpeningSides .card-side.left .opening-guest-tag,
+  #miuOpeningSides .card-side.left .opening-text {
+    position: relative;
+    inset: auto;
+    transform: none;
+    margin: 0;
+  }
+
+  #miuOpeningSides .card-side.left .opening-names {
+    width: 100%;
+    animation: none;
+  }
+
+  #miuOpeningSides .card-side.left .opening-names .name {
+    font-size: clamp(30px, 5.5vh, 42px);
+  }
+
+  #miuOpeningSides .card-side.left .opening-names .and {
+    font-size: clamp(26px, 4vh, 32px);
+  }
+
+  #miuOpeningSides .card-side.left .opening-date {
+    font-size: 16px;
+    white-space: normal;
+    text-align: center;
+  }
+
+  #miuOpeningSides .card-side.left .opening-invite {
+    font-size: 18px;
+  }
+
+  #miuOpeningSides .card-side.left .opening-guest-tag {
+    min-width: 0;
+    padding: 8px 18px;
+  }
+
+  #miuOpeningSides .card-side.left .opening-text {
+    width: min(100%, 280px);
+    font-size: 14px;
+  }
+
+  #miuOpeningCta {
+    position: relative;
+    inset: auto;
+    transform: none;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  #miuOpeningCtaBtn {
+    width: min(100%, 280px);
+  }
+}
+
+@media (min-width: 501px) and (max-height: 560px) {
+  #miuOpeningSides.default .card-side.left {
+    gap: 4px;
+    padding: 56px 24px 12px;
+  }
+
+  #miuOpeningSides .card-side.left .opening-names .name {
+    font-size: 28px;
+  }
+
+  #miuOpeningSides .card-side.left .opening-names .and {
+    font-size: 24px;
+  }
+
+  #miuOpeningSides .card-side.left .opening-date {
+    font-size: 14px;
+  }
+
+  #miuOpeningSides .card-side.left .opening-invite {
+    font-size: 16px;
+  }
+
+  #miuOpeningSides .card-side.left .opening-guest-tag {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  #miuOpeningSides .card-side.left .opening-text {
+    font-size: 12px;
+  }
+
+  #miuOpeningCtaBtn {
+    min-height: 40px;
+    padding: 10px 22px;
+    font-size: 15px;
+  }
+}
+
 /* ========================================================
    MOBILE RESPONSIVE OPTIMIZATIONS (SCREEN WIDTH <= 500px)
    ======================================================== */
