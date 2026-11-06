@@ -389,7 +389,7 @@ document.addEventListener("DOMContentLoaded", () => {
     blessingQueue = [...allBlessings].reverse();
 
     lastFrameTime = 0;
-    lastSpawnTime = 0;
+    lastSpawnTime = performance.now();
 
     if (animationFrameId !== null) {
       cancelAnimationFrame(animationFrameId);
