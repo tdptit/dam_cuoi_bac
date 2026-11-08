@@ -76,6 +76,34 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ----------------------------------------------------
+  // 1.5. CÁ NHÂN HÓA TÊN KHÁCH MỜI QUA URL (?to=... hoặc ?guest=...)
+  // ----------------------------------------------------
+  (function initGuestName() {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const guestName =
+        urlParams.get("to") ||
+        urlParams.get("guest") ||
+        urlParams.get("ten") ||
+        urlParams.get("u") ||
+        urlParams.get("name");
+
+      if (guestName && guestName.trim()) {
+        const cleanName = guestName.trim();
+        const guestTag = document.querySelector(".opening-guest-tag");
+        if (guestTag) {
+          guestTag.textContent = cleanName;
+        }
+
+        // Cập nhật tiêu đề trang tương ứng
+        document.title = `Phùng Bắc & Thu Hà – Kính mời ${cleanName}`;
+      }
+    } catch (e) {
+      console.warn("Could not parse guest name from URL:", e);
+    }
+  })();
+
+  // ----------------------------------------------------
   // 2. ENVELOPE OPENING OVERLAY
   // ----------------------------------------------------
   const envelopeOverlay = document.getElementById("miuOpening");
