@@ -1,6 +1,9 @@
-/* ========================================================
+﻿/* ========================================================
    CUSTOM STYLES FOR THIỆP CƯỚI 221 PRE (ONLINE WEDDING)
    ======================================================== */
+* {
+  touch-action: manipulation;
+}
 
 :root {
   --primary-color: #5d041e;
@@ -2104,9 +2107,9 @@ body.wedding-ready #page-root-container {
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
-              opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
-              filter 0.45s ease;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.45s ease;
   will-change: transform, opacity;
   background: #f0e6e1;
 }
@@ -2247,79 +2250,37 @@ body.wedding-ready #page-root-container {
 .ceremony-title {
   font-size: 16px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   color: #ffffff;
-  border-bottom: 1.5px solid rgba(255, 255, 255, 0.45);
-  padding-bottom: 2px;
-  margin-bottom: 3px;
-  display: inline-block;
+  margin-bottom: 2px;
 }
 
-.ceremony-day-name {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 1.5px;
+.ceremony-time-line {
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: 2px;
 }
 
-.ceremony-date-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin: 1px 0;
-}
-
-.ceremony-time,
-.ceremony-year {
-  font-size: 13.5px;
-  font-weight: 600;
+.ceremony-date-boxed {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #ffffff;
   letter-spacing: 0.5px;
-  color: #ffffff;
-}
-
-.ceremony-sep {
-  font-size: 15px;
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.ceremony-big-day {
-  font-size: 30px;
-  font-weight: 800;
-  line-height: 1;
-  color: #ffffff;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-
-.ceremony-heart {
-  font-size: 10.5px;
-  color: #ff3b5c;
-  position: absolute;
-  top: 1px;
-  right: -9px;
-  animation: heartPulse 1.6s ease-in-out infinite;
-}
-
-@keyframes heartPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.25); }
-}
-
-.ceremony-month {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.95);
-  font-weight: 500;
-  margin-top: 1px;
+  width: 170px;
+  padding: 4px 0;
+  margin: 4px auto 3px;
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  text-align: center;
 }
 
 .ceremony-lunar {
-  font-size: 11px;
+  font-size: 11.5px;
   font-style: italic;
   color: rgba(255, 255, 255, 0.82);
   margin-top: 1px;
@@ -2393,7 +2354,6 @@ body.wedding-ready #page-root-container {
   border-color: #ffffff;
   transform: scale(1.03);
 }
-
 
 /* ========================================================
    TOGGLE BLESSING STREAM BUTTON (BẬT / TẮT LỜI CHÚC)
@@ -2502,6 +2462,7 @@ body.wedding-ready #page-root-container {
     height: 30px;
     flex: 0 0 30px;
   }
+
   .bar-toggle-stream-btn svg {
     width: 15px;
     height: 15px;
@@ -2514,6 +2475,7 @@ body.wedding-ready #page-root-container {
     height: 27px;
     flex: 0 0 27px;
   }
+
   .bar-toggle-stream-btn svg {
     width: 14px;
     height: 14px;
