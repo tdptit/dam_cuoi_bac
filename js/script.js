@@ -76,20 +76,67 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ----------------------------------------------------
-  // 1.5. CÁ NHÂN HÓA TÊN KHÁCH MỜI QUA URL (?to=... hoặc ?guest=...)
+  // 1.5. CÁ NHÂN HÓA TÊN KHÁCH MỜI (Hỗ trợ: ?to=, #hash, /path)
   // ----------------------------------------------------
   (function initGuestName() {
     try {
+      let rawName = "";
+
+      // 1. Đọc từ Query string (?to=... hoặc ?guest=... hoặc ?Anh-Tuấn)
       const urlParams = new URLSearchParams(window.location.search);
-      const guestName =
+      rawName =
         urlParams.get("to") ||
         urlParams.get("guest") ||
         urlParams.get("ten") ||
         urlParams.get("u") ||
-        urlParams.get("name");
+        urlParams.get("name") ||
+        "";
 
-      if (guestName && guestName.trim()) {
-        const cleanName = guestName.trim();
+      // Nếu query chỉ có dạng ?Anh-Tuấn (không có dấu =)
+      if (!rawName && window.location.search) {
+        const queryStr = decodeURIComponent(window.location.search.substring(1)).trim();
+        if (queryStr && !queryStr.includes("=")) {
+          rawName = queryStr;
+        }
+      }
+
+      // 2. Đọc từ Hash (#Anh-Tuấn hoặc #to=Anh-Tuấn)
+      if (!rawName && window.location.hash) {
+        const hashStr = decodeURIComponent(window.location.hash.substring(1)).trim();
+        if (hashStr) {
+          rawName = hashStr.startsWith("to=") ? hashStr.substring(3) : hashStr;
+        }
+      }
+
+      // 3. Đọc từ Path (/Anh-Tuấn hoặc /bachawedding.site/Anh-Tuấn)
+      if (!rawName && window.location.pathname) {
+        const segments = window.location.pathname
+          .split("/")
+          .map((s) => decodeURIComponent(s).trim())
+          .filter((s) => Boolean(s) && !s.includes(".html") && !s.includes(".php"));
+
+        if (segments.length > 0) {
+          const last = segments[segments.length - 1];
+          const ignored = ["index", "home", "thiep", "moi", "dam_cuoi_bac"];
+          if (last && !ignored.includes(last.toLowerCase())) {
+            rawName = last;
+          }
+        }
+      }
+
+      if (rawName && rawName.trim()) {
+        let cleanName = rawName.trim();
+        try {
+          cleanName = decodeURIComponent(cleanName);
+        } catch (e) {}
+
+        // Tự động chuyển dấu '-' hoặc '_' thành khoảng trắng nếu tên dùng gạch nối
+        if (cleanName.includes("-") && !cleanName.includes(" ")) {
+          cleanName = cleanName.replace(/-/g, " ");
+        } else if (cleanName.includes("_") && !cleanName.includes(" ")) {
+          cleanName = cleanName.replace(/_/g, " ");
+        }
+
         const guestTag = document.querySelector(".opening-guest-tag");
         if (guestTag) {
           guestTag.textContent = cleanName;
