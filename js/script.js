@@ -880,6 +880,188 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+
+  // ----------------------------------------------------
+  // 15. OUR LOVE 3D PEEK CAROUSEL (Touch, Swipe & Auto)
+  // ----------------------------------------------------
+  const loveCarousel = document.getElementById("our-love-carousel");
+  if (loveCarousel) {
+    const dotsContainer = document.getElementById("love-carousel-dots");
+    const slides = Array.from(loveCarousel.querySelectorAll(".love-slide"));
+    const totalSlides = slides.length;
+    let currentIndex = 0;
+    let autoPlayTimer = null;
+    let isDragging = false;
+    let startX = 0;
+    let currentX = 0;
+    let hasMoved = false;
+
+    // Tạo thanh pagination dots
+    if (dotsContainer && totalSlides > 0) {
+      dotsContainer.innerHTML = "";
+      slides.forEach((_, i) => {
+        const dot = document.createElement("div");
+        dot.className = "love-dot" + (i === 0 ? " active" : "");
+        dot.addEventListener("click", (e) => {
+          e.stopPropagation();
+          goToSlide(i);
+        });
+        dotsContainer.appendChild(dot);
+      });
+    }
+
+    function updateSlides() {
+      slides.forEach((slide, i) => {
+        slide.classList.remove("is-active", "is-prev", "is-next", "is-far-prev", "is-far-next");
+
+        let diff = (i - currentIndex) % totalSlides;
+        if (diff > totalSlides / 2) diff -= totalSlides;
+        if (diff < -totalSlides / 2) diff += totalSlides;
+
+        if (diff === 0) {
+          slide.classList.add("is-active");
+        } else if (diff === -1) {
+          slide.classList.add("is-prev");
+        } else if (diff === 1) {
+          slide.classList.add("is-next");
+        } else if (diff < -1) {
+          slide.classList.add("is-far-prev");
+        } else {
+          slide.classList.add("is-far-next");
+        }
+      });
+
+      // Cập nhật dots
+      if (dotsContainer) {
+        const dots = dotsContainer.querySelectorAll(".love-dot");
+        dots.forEach((dot, idx) => {
+          dot.classList.toggle("active", idx === currentIndex);
+        });
+      }
+    }
+
+    function goToSlide(index) {
+      currentIndex = (index + totalSlides) % totalSlides;
+      updateSlides();
+      restartAutoPlay();
+    }
+
+    function nextSlide() {
+      goToSlide(currentIndex + 1);
+    }
+
+    function prevSlide() {
+      goToSlide(currentIndex - 1);
+    }
+
+    function startAutoPlay() {
+      stopAutoPlay();
+      autoPlayTimer = setInterval(nextSlide, 3500);
+    }
+
+    function stopAutoPlay() {
+      if (autoPlayTimer) {
+        clearInterval(autoPlayTimer);
+        autoPlayTimer = null;
+      }
+    }
+
+    function restartAutoPlay() {
+      stopAutoPlay();
+      autoPlayTimer = setInterval(nextSlide, 4000);
+    }
+
+    // Bấm vào ảnh 2 bên mép để chuyển nhanh tới ảnh đó
+    slides.forEach((slide) => {
+      slide.addEventListener("click", (e) => {
+        if (hasMoved) return; // Nếu đang vuốt tay thì bỏ qua
+        if (slide.classList.contains("is-prev")) {
+          e.stopPropagation();
+          prevSlide();
+        } else if (slide.classList.contains("is-next")) {
+          e.stopPropagation();
+          nextSlide();
+        }
+      });
+    });
+
+    // Vuốt tay (Touch Gestures) trên màn hình điện thoại
+    loveCarousel.addEventListener("touchstart", (e) => {
+      if (e.touches.length !== 1) return;
+      isDragging = true;
+      hasMoved = false;
+      startX = e.touches[0].clientX;
+      currentX = startX;
+      stopAutoPlay();
+    }, { passive: true });
+
+    loveCarousel.addEventListener("touchmove", (e) => {
+      if (!isDragging) return;
+      currentX = e.touches[0].clientX;
+      const diffX = currentX - startX;
+      if (Math.abs(diffX) > 10) {
+        hasMoved = true;
+      }
+    }, { passive: true });
+
+    loveCarousel.addEventListener("touchend", () => {
+      if (!isDragging) return;
+      isDragging = false;
+      const diffX = currentX - startX;
+      if (diffX < -35) {
+        nextSlide();
+      } else if (diffX > 35) {
+        prevSlide();
+      } else {
+        restartAutoPlay();
+      }
+    });
+
+    loveCarousel.addEventListener("touchcancel", () => {
+      isDragging = false;
+      restartAutoPlay();
+    });
+
+    // Kéo chuột (Mouse Drag) trên máy tính
+    loveCarousel.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      hasMoved = false;
+      startX = e.clientX;
+      currentX = startX;
+      stopAutoPlay();
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      currentX = e.clientX;
+      const diffX = currentX - startX;
+      if (Math.abs(diffX) > 8) {
+        hasMoved = true;
+      }
+    });
+
+    window.addEventListener("mouseup", () => {
+      if (!isDragging) return;
+      isDragging = false;
+      const diffX = currentX - startX;
+      if (diffX < -35) {
+        nextSlide();
+      } else if (diffX > 35) {
+        prevSlide();
+      } else {
+        restartAutoPlay();
+      }
+    });
+
+    // Tạm dừng khi di chuột vào và chạy lại khi rê chuột ra
+    loveCarousel.addEventListener("mouseenter", stopAutoPlay);
+    loveCarousel.addEventListener("mouseleave", startAutoPlay);
+
+    // Kích hoạt khởi đầu
+    updateSlides();
+    startAutoPlay();
+  }
+
   // Helper
   function escapeHtml(str) {
     return str

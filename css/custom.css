@@ -2052,3 +2052,140 @@ body.wedding-ready #page-root-container {
     padding: 4px 6px;
   }
 }
+
+/* ========================================================
+   OUR LOVE 3D PEEK CAROUSEL (Coverflow / Peek Effect)
+======================================================== */
+.our-love-carousel-wrapper {
+  position: absolute;
+  top: 3878px;
+  left: 0px;
+  width: 500px;
+  height: 255px;
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 85;
+}
+
+.our-love-carousel-wrapper:active {
+  cursor: grabbing;
+}
+
+.love-carousel-stage {
+  position: relative;
+  width: 100%;
+  height: 232px;
+  perspective: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.love-carousel-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.love-slide {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 172px;
+  height: 226px;
+  margin-left: -86px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
+              opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1), 
+              filter 0.45s ease;
+  will-change: transform, opacity;
+  background: #f0e6e1;
+}
+
+.love-slide-card {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  border-radius: 14px;
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+/* Center Active Slide */
+.love-slide.is-active {
+  transform: translate3d(0, 0, 0) scale(1);
+  opacity: 1;
+  filter: none;
+  z-index: 10;
+  box-shadow: 0 14px 32px rgba(93, 4, 30, 0.28), 0 4px 12px rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+}
+
+/* Left Peek Slide */
+.love-slide.is-prev {
+  transform: translate3d(-146px, 0, -20px) scale(0.85);
+  opacity: 0.68;
+  filter: brightness(0.88);
+  z-index: 5;
+  cursor: pointer;
+}
+
+/* Right Peek Slide */
+.love-slide.is-next {
+  transform: translate3d(146px, 0, -20px) scale(0.85);
+  opacity: 0.68;
+  filter: brightness(0.88);
+  z-index: 5;
+  cursor: pointer;
+}
+
+/* Hidden Off-Screen Slides */
+.love-slide.is-far-prev {
+  transform: translate3d(-270px, 0, -50px) scale(0.7);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.love-slide.is-far-next {
+  transform: translate3d(270px, 0, -50px) scale(0.7);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Pagination Dots */
+.love-carousel-dots {
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  z-index: 15;
+}
+
+.love-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(93, 4, 30, 0.22);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.love-dot.active {
+  width: 16px;
+  border-radius: 8px;
+  background: rgb(93, 4, 30);
+}
