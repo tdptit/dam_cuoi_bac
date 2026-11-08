@@ -1,3 +1,9 @@
+﻿// ========================================================
+// CẤU HÌNH GOOGLE SHEET LƯU THÔNG TIN XÁC NHẬN THAM DỰ (RSVP)
+// Dán link Web App Google Apps Script của bạn vào đây:
+// ========================================================
+window.RSVP_GOOGLE_SHEET_URL = window.RSVP_GOOGLE_SHEET_URL || "https://script.google.com/macros/s/AKfycbwunwSQ03mvhVPXTgdp9nEe_iIF2JABwci7wLGu-FIcqvij9y7FPZz6CeSU3r7ZXk6MUg/exec";
+
 /**
  * THIỆP CƯỚI 221 PRE - MINH ĐỨC & THU HÀ
  * Vanilla JavaScript (No Frameworks required)
@@ -137,6 +143,11 @@ document.addEventListener("DOMContentLoaded", () => {
           cleanName = cleanName.replace(/_/g, " ");
         }
 
+        window.__GUEST_NAME__ = cleanName;
+        const rsvpInput = document.getElementById("rsvp-name");
+        if (rsvpInput && !rsvpInput.value) {
+          rsvpInput.value = cleanName;
+        }
         const guestTag = document.querySelector(".opening-guest-tag");
         if (guestTag) {
           guestTag.textContent = cleanName;
@@ -227,13 +238,15 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       { passive: true },
     );
+    const INTERACTIVE_SELECTOR =
+      "a, button, input, select, textarea, label, form, .wedding-rsvp-box, .rsvp-form-container, [role='button'], #zen-toolbar, .modal-backdrop, .modal-content, .bar-toggle-stream-btn";
+
     invitationScroll.addEventListener("pointerdown", (event) => {
       if (
         event.target instanceof Element &&
-        event.target.closest(
-          "a, button, input, select, textarea, [role='button'], #zen-toolbar",
-        )
+        event.target.closest(INTERACTIVE_SELECTOR)
       ) {
+        stopInvitationAutoScroll(true);
         resumeOnNextClick = false;
         return;
       }
@@ -257,7 +270,16 @@ document.addEventListener("DOMContentLoaded", () => {
         resumeOnNextClick = false;
       }
     });
-    invitationScroll.addEventListener("click", () => {
+    invitationScroll.addEventListener("click", (event) => {
+      if (
+        event.target instanceof Element &&
+        event.target.closest(INTERACTIVE_SELECTOR)
+      ) {
+        stopInvitationAutoScroll(true);
+        resumeOnNextClick = false;
+        return;
+      }
+
       if (!autoScrollPaused || !resumeOnNextClick) return;
 
       startInvitationAutoScroll();
@@ -817,39 +839,144 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ----------------------------------------------------
-  // 10. RSVP BUTTON & FORM HANDLER
+  // 10. RSVP BUTTON & FORM HANDLER (TỰ ĐỘNG LƯU VÀO GOOGLE SHEET)
   // ----------------------------------------------------
+  const rsvpBoxEl = document.querySelector(".wedding-rsvp-box") || document.getElementById("wedding-rsvp-form");
+  if (rsvpBoxEl) {
+    const cancelAutoScrollOnForm = () => {
+      stopInvitationAutoScroll(true);
+      resumeOnNextClick = false;
+    };
+    ["pointerdown", "touchstart", "mousedown", "click", "focusin", "change", "input"].forEach((evtName) => {
+      rsvpBoxEl.addEventListener(evtName, cancelAutoScrollOnForm, { capture: true });
+    });
+  }
+
   const rsvpToolbarBtn = document.querySelector(".bar-rsvp-btn");
   if (rsvpToolbarBtn) {
     rsvpToolbarBtn.addEventListener("click", () => {
-      // Scroll smoothly to in-page RSVP form or open modal
-      const inPageRsvp =
-        document.querySelector('form[action=""]') ||
-        document.getElementById("rsvp-name");
+      stopInvitationAutoScroll(true);
+      resumeOnNextClick = false;
+      const inPageRsvp = document.getElementById("wedding-rsvp-form") || document.getElementById("rsvp-name");
       if (inPageRsvp) {
         inPageRsvp.scrollIntoView({ behavior: "smooth", block: "center" });
-      } else {
-        openModal("rsvp-modal");
+        const nameInput = document.getElementById("rsvp-name");
+        if (nameInput && !nameInput.value) {
+          setTimeout(() => nameInput.focus(), 600);
+        }
       }
     });
   }
 
-  // In-page RSVP form
-  const rsvpNameInput = document.getElementById("rsvp-name");
-  if (rsvpNameInput) {
-    const form = rsvpNameInput.closest("form");
-    if (form) {
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const guestName = rsvpNameInput.value.trim();
-        if (!guestName) {
-          alert("Vui lòng nhập họ và tên của bạn!");
-          rsvpNameInput.focus();
-          return;
-        }
+  const rsvpForm = document.getElementById("wedding-rsvp-form");
+  if (rsvpForm) {
+    const rsvpNameInput = document.getElementById("rsvp-name");
+    const countWrapper = document.getElementById("rsvp-count-wrapper");
+    const attendanceRadios = rsvpForm.querySelectorAll('input[name="attendance"]');
+    const submitBtn = document.getElementById("rsvp-submit-btn");
+    const successPanel = document.getElementById("rsvp-success-panel");
+    const resubmitBtn = document.getElementById("rsvp-resubmit-btn");
+    const successNameEl = document.getElementById("rsvp-success-name");
 
-        showToast(`Cảm ơn ${guestName} đã xác nhận tham dự! 🎉`);
-        burstHearts(window.innerWidth / 2, window.innerHeight / 2, 25);
+    // Tự động điền tên khách mời nếu có trên URL (?to=, #hash, /path)
+    if (rsvpNameInput && window.__GUEST_NAME__ && !rsvpNameInput.value) {
+      rsvpNameInput.value = window.__GUEST_NAME__;
+    }
+
+    // Đóng/mở chọn số người tham dự khi chọn 'Có' hoặc 'Không'
+    attendanceRadios.forEach((radio) => {
+      radio.addEventListener("change", () => {
+        if (radio.value === "no") {
+          if (countWrapper) countWrapper.style.display = "none";
+        } else {
+          if (countWrapper) countWrapper.style.display = "block";
+        }
+      });
+    });
+
+    // Xử lý gửi biểu mẫu xác nhận tham dự
+    rsvpForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const guestName = rsvpNameInput ? rsvpNameInput.value.trim() : "";
+      if (!guestName) {
+        alert("Vui lòng nhập họ và tên của bạn!");
+        if (rsvpNameInput) rsvpNameInput.focus();
+        return;
+      }
+
+      const sideInput = rsvpForm.querySelector('input[name="guest_side"]:checked');
+      const side = sideInput ? sideInput.value : "Nhà Trai";
+
+      const attInput = rsvpForm.querySelector('input[name="attendance"]:checked');
+      const attendance = attInput ? attInput.value : "yes";
+
+      const countInput = document.getElementById("rsvp-attendee-count");
+      const attendeeCount = attendance === "yes" ? (countInput ? countInput.value : "1") : "0";
+
+      const messageInput = document.getElementById("rsvp-message");
+      const message = messageInput ? messageInput.value.trim() : "";
+
+      const submissionData = {
+        name: guestName,
+        side: side,
+        attendance: attendance,
+        attendeeCount: attendeeCount,
+        message: message,
+        submittedAt: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })
+      };
+
+      // Trạng thái đang gửi trên nút
+      const btnTextEl = submitBtn ? submitBtn.querySelector(".rsvp-btn-text") : null;
+      if (btnTextEl) btnTextEl.textContent = "ĐANG GỬI XÁC NHẬN...";
+      if (submitBtn) submitBtn.disabled = true;
+
+      // 1. Gửi dữ liệu tới Google Sheets qua Google Apps Script Web App
+      const scriptUrl = window.RSVP_GOOGLE_SHEET_URL || "";
+      const isConfigured = scriptUrl && !scriptUrl.includes("YOUR_SCRIPT_ID") && scriptUrl.startsWith("https://script.google.com");
+
+      if (isConfigured) {
+        try {
+          await fetch(scriptUrl, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8",
+            },
+            body: JSON.stringify(submissionData),
+          });
+        } catch (err) {
+          console.warn("Lỗi gửi tới Google Sheet:", err);
+        }
+      }
+
+      // 2. Lưu bản sao offline vào localStorage
+      try {
+        const stored = JSON.parse(localStorage.getItem("wedding_rsvp_submissions") || "[]");
+        stored.push(submissionData);
+        localStorage.setItem("wedding_rsvp_submissions", JSON.stringify(stored));
+      } catch (err) { }
+
+      // Phục hồi nút submit
+      if (btnTextEl) btnTextEl.textContent = "GỬI XÁC NHẬN";
+      if (submitBtn) submitBtn.disabled = false;
+
+      // Hiệu ứng tim chúc mừng & thông báo toast
+      burstHearts(window.innerWidth / 2, window.innerHeight / 2, 30);
+      showToast(attendance === "yes" ? `Cảm ơn ${guestName} đã xác nhận tham dự! 🎉` : `Đã lưu phản hồi của ${guestName}! Cảm ơn bạn rất nhiều!`);
+
+      // Hiển thị khung thành công
+      rsvpForm.style.display = "none";
+      if (successPanel) {
+        if (successNameEl) successNameEl.textContent = guestName;
+        successPanel.style.display = "block";
+      }
+    });
+
+    // Cho phép gửi lại hoặc chỉnh sửa thông tin
+    if (resubmitBtn) {
+      resubmitBtn.addEventListener("click", () => {
+        if (successPanel) successPanel.style.display = "none";
+        if (rsvpForm) rsvpForm.style.display = "flex";
       });
     }
   }

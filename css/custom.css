@@ -2481,3 +2481,318 @@ body.wedding-ready #page-root-container {
     height: 14px;
   }
 }
+/* ========================================================
+   MODERN WEDDING RSVP FORM & GOOGLE SHEETS INTEGRATION
+   ======================================================== */
+.rsvp-form-container {
+  overflow: visible !important;
+}
+
+.wedding-rsvp-box {
+  width: 100%;
+  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 18px 16px;
+  box-shadow: 0 10px 30px rgba(93, 4, 30, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(93, 4, 30, 0.15);
+  font-family: "Lora Regular", Georgia, serif;
+  color: #333333;
+}
+
+.rsvp-box-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.rsvp-box-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #5d041e;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 4px 0;
+  font-family: "Lora Regular", Georgia, serif;
+}
+
+.rsvp-box-sub {
+  font-size: 12.5px;
+  color: #777777;
+  margin: 0;
+  font-style: italic;
+  line-height: 1.35;
+}
+
+.wedding-rsvp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.rsvp-field {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.rsvp-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444444;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rsvp-required {
+  color: #d32f2f;
+}
+
+.rsvp-input,
+.rsvp-select,
+.rsvp-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #dfd1d4;
+  font-size: 13.5px;
+  font-family: "Lora Regular", Georgia, serif;
+  color: #222222;
+  background: #faf8f8;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.rsvp-input:focus,
+.rsvp-select:focus,
+.rsvp-textarea:focus {
+  border-color: #5d041e;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(93, 4, 30, 0.12);
+}
+
+.rsvp-pill-group {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.rsvp-pill-item {
+  flex: 1;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+}
+
+.rsvp-pill-item input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rsvp-pill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 6px;
+  border-radius: 999px;
+  border: 1.5px solid #d9c4c8;
+  background: #fdfafb;
+  color: #555555;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.rsvp-pill-item input:checked + .rsvp-pill-btn {
+  background: #5d041e;
+  border-color: #5d041e;
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(93, 4, 30, 0.22);
+}
+
+.rsvp-radio-list {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.rsvp-radio-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 8px;
+  border-radius: 8px;
+  border: 1.5px solid #eee4e6;
+  background: #faf7f8;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.rsvp-radio-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rsvp-radio-custom {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #b59ea3;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.rsvp-radio-option input:checked ~ .rsvp-radio-custom {
+  border-color: #5d041e;
+}
+
+.rsvp-radio-option input:checked ~ .rsvp-radio-custom::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #5d041e;
+  display: block;
+}
+
+.rsvp-radio-option:has(input:checked) {
+  border-color: #5d041e;
+  background: #fdf2f4;
+}
+
+.rsvp-radio-text {
+  font-size: 12.5px;
+  color: #333333;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.rsvp-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.rsvp-select-wrapper::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #5d041e;
+  pointer-events: none;
+}
+
+.rsvp-select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 28px;
+}
+
+.rsvp-textarea {
+  resize: vertical;
+  min-height: 42px;
+}
+
+.rsvp-btn-submit {
+  width: 100%;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #740526 0%, #5d041e 100%);
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 5px 15px rgba(93, 4, 30, 0.25);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: "Lora Regular", Georgia, serif;
+}
+
+.rsvp-btn-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 18px rgba(93, 4, 30, 0.35);
+  background: linear-gradient(135deg, #83072c 0%, #680523 100%);
+}
+
+.rsvp-btn-submit:active {
+  transform: translateY(1px);
+}
+
+.rsvp-btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.rsvp-success-panel {
+  text-align: center;
+  padding: 16px 8px;
+  animation: rsvpFadeIn 0.35s ease;
+}
+
+@keyframes rsvpFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.rsvp-success-icon {
+  font-size: 38px;
+  margin-bottom: 4px;
+}
+
+.rsvp-success-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #5d041e;
+  margin: 0 0 6px 0;
+  font-family: "Lora Regular", Georgia, serif;
+}
+
+.rsvp-success-msg {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #555555;
+  margin: 0 0 14px 0;
+}
+
+.rsvp-btn-resubmit {
+  display: inline-block;
+  padding: 7px 18px;
+  border-radius: 999px;
+  border: 1px solid #5d041e;
+  background: transparent;
+  color: #5d041e;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rsvp-btn-resubmit:hover {
+  background: #fdf2f4;
+}
