@@ -332,7 +332,6 @@ document.addEventListener("DOMContentLoaded", () => {
       envelopeOverlay.style.display = "none";
       document.body.classList.add("wedding-ready");
       playAudio();
-      burstHearts(window.innerWidth / 2, window.innerHeight / 2, 25);
       startInvitationAutoScroll();
     }
 
