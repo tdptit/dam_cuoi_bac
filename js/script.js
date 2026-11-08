@@ -1,4 +1,4 @@
-/**
+﻿/**
  * THIỆP CƯỚI 221 PRE - MINH ĐỨC & THU HÀ
  * Vanilla JavaScript (No Frameworks required)
  */
@@ -292,7 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ----------------------------------------------------
   // 3. COUNTDOWN TIMER (Target: 26.12.2026 09:30:00)
   // ----------------------------------------------------
-  const targetDate = new Date("2026-12-26T09:30:00+07:00").getTime();
+  const targetDate = new Date("2026-11-27T15:00:00+07:00").getTime();
 
   function updateCountdown() {
     const now = new Date().getTime();
@@ -434,6 +434,17 @@ document.addEventListener("DOMContentLoaded", () => {
     return div;
   }
 
+  // Kiểm tra xem tin nhắn cuối cùng đã di chuyển đủ xa để tạo tin nhắn mới chưa (chống đè khi đổi tab)
+  function canSpawnNext() {
+    if (visibleBlessings.length === 0) return true;
+    const lowest = visibleBlessings[visibleBlessings.length - 1];
+    const startY = blessingContainer.clientHeight - BLESSING_HEIGHT;
+    const distanceMoved = startY - lowest.y;
+    const msgHeight = Math.max(lowest.element.offsetHeight || 32, 28);
+    // Cần di chuyển ít nhất bằng chiều cao tin nhắn + 10px khoảng cách đệm
+    return distanceMoved >= msgHeight + 10;
+  }
+
   // Thêm một tin nhắn vào phía dưới vùng hiển thị
   function appendBlessing(item) {
     if (!track || !blessingContainer) return;
@@ -461,6 +472,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!lastFrameTime) lastFrameTime = timestamp;
 
+    // Giới hạn deltaTime tối đa 50ms để animation luôn mượt
     const deltaTime = Math.min((timestamp - lastFrameTime) / 1000, 0.05);
 
     lastFrameTime = timestamp;
@@ -489,8 +501,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return true;
     });
 
-    // Tạo tin nhắn mới theo chu kỳ
-    if (timestamp - lastSpawnTime >= BLESSING_INTERVAL) {
+    // Tạo tin nhắn mới theo chu kỳ nhưng BẮT BUỘC tin nhắn trước đã đi lên đủ xa
+    if (timestamp - lastSpawnTime >= BLESSING_INTERVAL && canSpawnNext()) {
       if (!blessingQueue.length) {
         // Hết danh sách thì phát lại các lời chúc mẫu
         blessingQueue = [...defaultBlessings].reverse();
@@ -507,6 +519,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     animationFrameId = requestAnimationFrame(animateBlessings);
   }
+
+  // Xử lý khi người dùng đổi tab trình duyệt (Visibility Change & Focus)
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      lastFrameTime = 0;
+    } else {
+      // Khi quay lại tab: đồng bộ lại mốc thời gian để không bị dồn bước
+      lastFrameTime = performance.now();
+      lastSpawnTime = performance.now();
+    }
+  });
+
+  window.addEventListener("focus", () => {
+    lastFrameTime = performance.now();
+    lastSpawnTime = performance.now();
+  });
 
   // Khởi động luồng lời chúc
   function renderBlessingStream() {
@@ -814,17 +842,39 @@ document.addEventListener("DOMContentLoaded", () => {
   // ----------------------------------------------------
   // 14. GOOGLE MAPS BUTTONS ("XEM CHỈ ĐƯỜNG")
   // ----------------------------------------------------
+  const MAP_URLS = {
+    groom: "https://www.google.com/maps?q=Quang+Trung,+V%C4%A9nh+Y%C3%AAn,+Ph%C3%BA+Th%E1%BB%8D&ftid=0x3134f03c9320672f:0x16d57ea0f2e6bcd9&entry=gps&shh=CAE&lucs=,94297699,100826475,94231188,100821559,47071704,100809208,94218641,94282134,100835699,94286869,100820247,100822504,100804975,100838877,121816461,100849759&g_ep=CAISEjI2LjQ0LjQuMDA2ODc3NDIxMBgAINeCAyqaASw5NDI5NzY5OSwxMDA4MjY0NzUsOTQyMzExODgsMTAwODIxNTU5LDQ3MDcxNzA0LDEwMDgwOTIwOCw5NDIxODY0MSw5NDI4MjEzNCwxMDA4MzU2OTksOTQyODY4NjksMTAwODIwMjQ3LDEwMDgyMjUwNCwxMDA4MDQ5NzUsMTAwODM4ODc3LDEyMTgxNjQ2MSwxMDA4NDk3NTlCAlZO&skid=01ca8150-8b82-41cc-a865-48435e15881d&g_st=ifm",
+    bride: "https://www.google.com/maps?q=21.2959202,105.5641428&entry=gps&shh=CAE&lucs=,94297699,100826475,94231188,100821559,47071704,100809208,94218641,94282134,100835699,94286869,100820247,100822504,100804975,100838877,121816461,100849759&g_ep=CAISEjI2LjQ1LjEuMDExNzM4Mjc5MBgAINeCAyqaASw5NDI5NzY5OSwxMDA4MjY0NzUsOTQyMzExODgsMTAwODIxNTU5LDQ3MDcxNzA0LDEwMDgwOTIwOCw5NDIxODY0MSw5NDI4MjEzNCwxMDA4MzU2OTksOTQyODY4NjksMTAwODIwMjQ3LDEwMDgyMjUwNCwxMDA4MDQ5NzUsMTAwODM4ODc3LDEyMTgxNjQ2MSwxMDA4NDk3NTlCAlZO&skid=eb9b2ae2-a985-4fdb-8fe3-23b539030ef0&g_st=ifm"
+  };
+
+  // Nhà trai map button (Node hJviEDP9ZI)
+  const groomMapBox = document.querySelector('[data-node-id="hJviEDP9ZI"]');
+  if (groomMapBox) {
+    groomMapBox.style.cursor = "pointer";
+    groomMapBox.addEventListener("click", () => {
+      window.open(MAP_URLS.groom, "_blank");
+    });
+  }
+
+  // Nhà gái map button (Node xKsBv0AnUa)
+  const brideMapBox = document.querySelector('[data-node-id="xKsBv0AnUa"]');
+  if (brideMapBox) {
+    brideMapBox.style.cursor = "pointer";
+    brideMapBox.addEventListener("click", () => {
+      window.open(MAP_URLS.bride, "_blank");
+    });
+  }
+
+  // Fallback for any other 'xem chỉ đường' elements
   document.querySelectorAll("p").forEach((p) => {
     if (p.textContent.trim().toLowerCase().includes("xem chỉ đường")) {
       const parent = p.closest(".text-box-component") || p.parentElement;
-      if (parent) {
+      if (parent && !parent.getAttribute("data-map-bound")) {
+        parent.setAttribute("data-map-bound", "true");
         parent.style.cursor = "pointer";
+        const isBride = parent.getAttribute("data-node-id") === "xKsBv0AnUa";
         parent.addEventListener("click", () => {
-          const address = "Số 1 Lương Yên, Bạch Đằng, Hai Bà Trưng, Hà Nội";
-          window.open(
-            `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`,
-            "_blank",
-          );
+          window.open(isBride ? MAP_URLS.bride : MAP_URLS.groom, "_blank");
         });
       }
     }

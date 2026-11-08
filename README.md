@@ -1,4 +1,4 @@
-# Thiệp Cưới Online 221 Pre (Minh Đức & Thu Hà)
+﻿# Thiệp Cưới Online 221 Pre (Phùng Bắc & Thu Hà)
 
 Mẫu thiệp cưới online sang trọng phong cách **Thiệp Cưới 221 Pre** (tương tự [ZenLove Template 221](https://zenlove.me/template/thiep-cuoi-221-pre/preview?layout=feed)), được xây dựng hoàn toàn bằng **HTML5, CSS3, JavaScript thuần (Vanilla JS)** — không phụ thuộc vào bất kỳ framework nặng nề nào (React, Vue, Angular, Node.js). Bạn chỉ cần mở file `index.html` trực tiếp trên trình duyệt là có thể sử dụng ngay lập tức!
 
@@ -11,15 +11,15 @@ Mẫu thiệp cưới online sang trọng phong cách **Thiệp Cưới 221 Pre*
 2. **Nhạc Nền Đám Cưới (Canon In D):**
    - Nút bật/tắt nhạc nổi trên góc phải với biểu tượng đĩa than xoay tròn mượt mà khi phát nhạc.
 3. **Đồng Hồ Đếm Ngược (Countdown Timer):**
-   - Đếm ngược thời gian thực đến ngày cưới (26.12.2026): Ngày - Giờ - Phút - Giây.
+   - Đếm ngược thời gian thực đến ngày cưới (27.11.2026): Ngày - Giờ - Phút - Giây.
 4. **Lịch Cưới Đánh Dấu Ngày Trọng Đại:**
    - Lịch tháng 12/2026 với biểu tượng trái tim nổi bật vào ngày cưới 26.
 5. **Thông Tin Cô Dâu & Chú Rể:**
-   - Chú rể: **Minh Đức** (Nhà trai: Ông Nguyễn Bá Hải - Bà Vũ Thu An)
-   - Cô dâu: **Thu Hà** (Nhà gái: Ông Nguyễn Văn Tài - Bà Lê Thị Thinh)
+   - Chú rể: **Phùng Bắc** (Nhà trai: Ông Phùng Văn Ân - Bà Phùng Thị Giáp)
+   - Cô dâu: **Thu Hà** (Nhà gái: Ông Phùng Văn Hiền - Bà Phùng Thị Thái)
    - Lời ngỏ câu chuyện tình yêu cảm xúc.
 6. **Thời Gian & Địa Điểm Tổ Chức:**
-   - **Lễ Thành Hôn:** 09:30 - Chủ nhật, 26.12.2026 tại Tư gia nhà trai (Số 1 Lương Yên, Bạch Đằng, Hà Nội).
+   - **Lễ Thành Hôn:** 09:30 - Chủ nhật, 27.11.2026 tại Tư gia nhà trai (Số 33 đường Quang Trung, TDP Yên, P. Vĩnh Yên, Phú Thọ).
    - **Bữa Tiệc Chung Vui:** 17:30 - Thứ bảy tại Tư gia nhà gái.
    - Nút **"Xem chỉ đường"** bấm mở Google Maps dẫn đường trực tiếp.
 7. **Album Ảnh Cưới (Photo Gallery & Lightbox):**
@@ -64,8 +64,8 @@ dam_cuoi_bac/
 
 Nếu bạn muốn thay đổi thông tin đám cưới theo ý mình:
 
-- **Tên cô dâu, chú rể và gia đình:** Mở file `index.html`, tìm kiếm `Minh Đức` hoặc `Thu Hà` và thay bằng tên bạn muốn.
-- **Ngày cưới:** Mở `index.html` tìm ngày `26.12.2026`, đồng thời mở `js/script.js` dòng target date:
+- **Tên cô dâu, chú rể và gia đình:** Mở file `index.html`, tìm kiếm `Phùng Bắc` hoặc `Thu Hà` và thay bằng tên bạn muốn.
+- **Ngày cưới:** Mở `index.html` tìm ngày `27.11.2026`, đồng thời mở `js/script.js` dòng target date:
   ```javascript
   const targetDate = new Date('2026-12-26T09:30:00+07:00').getTime();
   ```
