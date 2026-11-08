@@ -1526,7 +1526,7 @@ body.wedding-ready #page-root-container {
 #miuOpeningSides .card-side.left .opening-invite {
   position: absolute;
   left: 50%;
-  top: 312px;
+  top: 256px;
   transform: translateX(-50%);
   color: #5a0d1b;
   font-size: 20px;
@@ -1540,7 +1540,7 @@ body.wedding-ready #page-root-container {
 #miuOpeningSides .card-side.left .opening-guest-tag {
   position: absolute;
   left: 50%;
-  top: 356px;
+  top: 300px;
   transform: translateX(-50%);
   background: rgba(104, 14, 29, 0.14);
   color: #4e0d1d;
@@ -1563,7 +1563,7 @@ body.wedding-ready #page-root-container {
 #miuOpeningSides .card-side.left .opening-text {
   position: absolute;
   left: 50%;
-  top: 410px;
+  top: 366px;
   transform: translateX(-50%);
   width: min(78%, 260px);
   color: #4c0d1d;
@@ -1641,6 +1641,7 @@ body.wedding-ready #page-root-container {
   }
 
   #miuOpeningSides .card-side.left .opening-invite {
+    margin-top: clamp(16px, 2.5vh, 24px);
     font-size: 19px;
   }
 
@@ -1972,20 +1973,20 @@ body.wedding-ready #page-root-container {
   }
 
   #miuOpeningSides .card-side.left .opening-invite {
-    top: 238px;
-    font-size: 17px;
+    top: 196px;
+    font-size: 16px;
   }
 
   #miuOpeningSides .card-side.left .opening-guest-tag {
-    top: 280px;
+    top: 236px;
     min-width: 180px;
     padding: 8px 12px;
     font-size: 13px;
   }
 
   #miuOpeningSides .card-side.left .opening-text {
-    top: 328px;
-    width: 78%;
+    top: 298px;
+    width: 80%;
     font-size: 12.5px;
     line-height: 1.4;
   }
@@ -2191,4 +2192,330 @@ body.wedding-ready #page-root-container {
   width: 16px;
   border-radius: 8px;
   background: rgb(93, 4, 30);
+}
+
+
+/* ========================================================
+   WEDDING CEREMONY CARDS (BOX 1: NHÀ GÁI & BOX 2: NHÀ TRAI)
+   ======================================================== */
+[data-node-id="nQ5cbTU5ey"],
+[data-node-id="_phkFsk2Jg"],
+[data-node-id="Hy8_nFeVN0"],
+[data-node-id="Q8ujhlE6gY"],
+[data-node-id="Vk3M9ddYWq"],
+[data-node-id="KgUXi0CA8R"],
+[data-node-id="hJviEDP9ZI"],
+[data-node-id="Q0gIppzxPv"],
+[data-node-id="0ypWkDv-DE"],
+[data-node-id="LMCkqyTzJ-"],
+[data-node-id="pqh8CNtsqx"],
+[data-node-id="BNe7wnMEle"],
+[data-node-id="JQOpqQJcji"],
+[data-node-id="xKsBv0AnUa"] {
+  display: none !important;
+}
+
+.ceremony-card-wrapper {
+  overflow: visible !important;
+}
+
+.wedding-ceremony-card {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  background: rgb(93, 4, 30);
+  border-radius: 20px;
+  padding: 16px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  color: #ffffff;
+  font-family: "Lora Regular", Georgia, serif;
+  box-shadow: 0 10px 30px rgba(93, 4, 30, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.ceremony-subevent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ceremony-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ffffff;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.45);
+  padding-bottom: 2px;
+  margin-bottom: 3px;
+  display: inline-block;
+}
+
+.ceremony-day-name {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2px;
+}
+
+.ceremony-date-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 1px 0;
+}
+
+.ceremony-time,
+.ceremony-year {
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+.ceremony-sep {
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.ceremony-big-day {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ceremony-heart {
+  font-size: 10.5px;
+  color: #ff3b5c;
+  position: absolute;
+  top: 1px;
+  right: -9px;
+  animation: heartPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes heartPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+}
+
+.ceremony-month {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.ceremony-lunar {
+  font-size: 11px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.82);
+  margin-top: 1px;
+}
+
+.ceremony-divider-dashed {
+  width: 65%;
+  height: 0;
+  border-top: 1px dashed rgba(255, 255, 255, 0.25);
+  margin: 4px auto;
+}
+
+.ceremony-divider-solid {
+  width: 75%;
+  height: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  margin: 6px auto;
+}
+
+.ceremony-location {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ceremony-location-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.ceremony-location-addr {
+  font-size: 12px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.92);
+  text-align: center;
+  max-width: 410px;
+}
+
+.ceremony-btn-wrap {
+  margin-top: 4px;
+}
+
+.ceremony-map-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  animation: animation-pulse 1.8s infinite ease-in-out;
+}
+
+.ceremony-map-btn:hover,
+.ceremony-map-btn:active {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: #ffffff;
+  transform: scale(1.03);
+}
+
+
+/* ========================================================
+   TOGGLE BLESSING STREAM BUTTON (BẬT / TẮT LỜI CHÚC)
+   ======================================================== */
+.bar-toggle-stream-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(197, 160, 89, 0.45);
+  background: #ffffff;
+  color: var(--primary-color, #5d041e);
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.bar-toggle-stream-btn:hover {
+  background: #fdf5f5;
+  border-color: var(--primary-color, #5d041e);
+  transform: scale(1.06);
+}
+
+.bar-toggle-stream-btn:active {
+  transform: scale(0.94);
+}
+
+.bar-toggle-stream-btn .icon-blessing-off {
+  display: none;
+}
+
+.bar-toggle-stream-btn .icon-blessing-on {
+  display: block;
+}
+
+.bar-toggle-stream-btn.is-off {
+  background: #f0f0f2;
+  border-color: rgba(180, 180, 190, 0.6);
+  color: #888899;
+  box-shadow: none;
+}
+
+.bar-toggle-stream-btn.is-off .icon-blessing-on {
+  display: none;
+}
+
+.bar-toggle-stream-btn.is-off .icon-blessing-off {
+  display: block;
+}
+
+#blessing-msg-list.is-hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* PC screen (>= 700px): nằm ở cạnh bên trái của button Tham dự */
+@media (min-width: 700px) {
+  .bar-toggle-stream-btn {
+    position: absolute;
+    left: -52px;
+    top: 6px;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    box-shadow: 0 4px 16px rgba(93, 4, 30, 0.16);
+    border: 1.5px solid rgba(220, 205, 185, 0.85);
+    background: #ffffff;
+    z-index: 1000;
+  }
+
+  .bar-toggle-stream-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .bar-toggle-stream-btn:hover::after {
+    content: attr(title);
+    position: absolute;
+    right: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(32, 35, 44, 0.9);
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 5px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+}
+
+/* Mobile screen <= 500px */
+@media (max-width: 500px) {
+  .bar-toggle-stream-btn {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+  }
+  .bar-toggle-stream-btn svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+@media (max-width: 374px) {
+  .bar-toggle-stream-btn {
+    width: 27px;
+    height: 27px;
+    flex: 0 0 27px;
+  }
+  .bar-toggle-stream-btn svg {
+    width: 14px;
+    height: 14px;
+  }
 }

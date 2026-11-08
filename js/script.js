@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let cleanName = rawName.trim();
         try {
           cleanName = decodeURIComponent(cleanName);
-        } catch (e) {}
+        } catch (e) { }
 
         // Tự động chuyển dấu '-' hoặc '_' thành khoảng trắng nếu tên dùng gạch nối
         if (cleanName.includes("-") && !cleanName.includes(" ")) {
@@ -251,8 +251,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (
         resumeOnNextClick &&
         Math.abs(event.clientX - pointerStartX) +
-          Math.abs(event.clientY - pointerStartY) >
-          8
+        Math.abs(event.clientY - pointerStartY) >
+        8
       ) {
         resumeOnNextClick = false;
       }
@@ -645,7 +645,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderBlessingStream();
 
-    // ----------------------------------------------------
+  // ----------------------------------------------------
+  // 5.1. TOGGLE BLESSING STREAM (BẬT / TẮT HIỂN THỊ LỜI CHÚC)
+  // ----------------------------------------------------
+  const toggleStreamBtn = document.getElementById("toggle-blessing-stream-btn");
+  let isStreamVisible = true;
+
+  if (toggleStreamBtn && blessingContainer) {
+    toggleStreamBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      isStreamVisible = !isStreamVisible;
+
+      if (isStreamVisible) {
+        blessingContainer.classList.remove("is-hidden");
+        toggleStreamBtn.classList.remove("is-off");
+        toggleStreamBtn.classList.add("is-on");
+        toggleStreamBtn.setAttribute("title", "Tắt hiển thị lời chúc");
+        if (typeof showToast === "function") {
+          showToast("Đã bật hiển thị lời chúc 💕");
+        }
+        maintainBlessingStream();
+      } else {
+        blessingContainer.classList.add("is-hidden");
+        toggleStreamBtn.classList.remove("is-on");
+        toggleStreamBtn.classList.add("is-off");
+        toggleStreamBtn.setAttribute("title", "Bật hiển thị lời chúc");
+        if (typeof showToast === "function") {
+          showToast("Đã ẩn lời chúc");
+        }
+      }
+    });
+  }
+
+  // ----------------------------------------------------
   // 6. MODAL UTILITIES (SHOW / HIDE)
   // ----------------------------------------------------
   function openModal(modalId) {
@@ -761,7 +793,7 @@ document.addEventListener("DOMContentLoaded", () => {
           "wedding_blessings",
           JSON.stringify(storedBlessings),
         );
-      } catch (e) {}
+      } catch (e) { }
 
       blessingQueue.unshift(newBlessing);
       maintainBlessingStream();
