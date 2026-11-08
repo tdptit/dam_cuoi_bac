@@ -1,4 +1,4 @@
-﻿/**
+/**
  * THIỆP CƯỚI 221 PRE - MINH ĐỨC & THU HÀ
  * Vanilla JavaScript (No Frameworks required)
  */
@@ -368,20 +368,9 @@ document.addEventListener("DOMContentLoaded", () => {
     { name: "Chinh", text: "Nụ cười của hai bạn đẹp lắm! 🌷" },
     { name: "Tuấn", text: "Chúc cô dâu chú rể luôn đồng hành! 💞" },
     { name: "Lan", text: "Sớm sinh quý tử nha! 👶" },
-    { name: "Bích", text: "Nhìn hai bạn thật xứng đôi! 🕊️" },
-    { name: "Quân", text: "Mãi yêu thương nhau, có nhiều niềm vui! 🎉" },
-    { name: "Yến", text: "Chúc ngày vui như mơ, hạnh phúc như mong đợi! 🌹" },
-    { name: "Nam", text: "Cuộc sống mới của hai bạn thật đẹp! 💑" },
-    { name: "Minh", text: "Yêu nhau rồi thì cùng nhau đi hết con đường! ❤️" },
-    { name: "Đạt", text: "Hạnh phúc trọn vẹn cho hai bạn! 🫶" },
-    { name: "Út", text: "Chúc luôn bình an và ngập tràn tiếng cười! 😊" },
-    { name: "Mai", text: "Tình yêu đẹp như trong phim! ✨" },
-    { name: "Khoa", text: "Chúc hai bạn thành công trong ngôi nhà mới! 🏡" },
-    { name: "Thảo", text: "Mãi là một cặp đôi hoàn hảo! 💘" },
-    { name: "Vân", text: "Hạnh phúc trăm năm thật là tuyệt vời! 💫" },
-    { name: "Dương", text: "Một ngày cưới đẹp như mơ! 🌷" },
-    { name: "Tú", text: "Cứ đi tiếp cùng nhau, hạnh phúc sẽ đến! 💖" },
-    { name: "Ngọc", text: "Chúc cả hai luôn nắm tay nhau! 🤍" },
+    { name: "Mai", text: "Trăm năm tình viên mãn, đầu bạc răng long! 💍" },
+    { name: "Phương", text: "Chúc mừng hạnh phúc Bắc & Hà nha! 🎉" },
+    { name: "Hoàng", text: "Chúc hai bạn luôn đong đầy yêu thương! 🥂" },
   ];
 
   // Load lời chúc đã lưu
@@ -409,17 +398,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Cấu hình chuyển động
-  const BLESSING_INTERVAL = 1200; // Khoảng cách giữa 2 tin nhắn (ms)
-  const BLESSING_SPEED = 34; // Tốc độ di chuyển (pixel/giây)
-  const BLESSING_HEIGHT = 30;
+  // Cấu hình chuyển động đồng đều tuyệt đối
+  const BLESSING_SPEED = 32; // Tốc độ di chuyển mượt mà (pixel/giây)
+  const MESSAGE_GAP = 12; // Khoảng cách cố định tuyệt đối giữa mọi lời chúc (px)
 
   let blessingQueue = [...allBlessings].reverse();
   let visibleBlessings = [];
 
   let lastFrameTime = 0;
-  let lastSpawnTime = 0;
   let animationFrameId = null;
+  let isTabHidden = false;
 
   function createBlessingElement(name, text, isUser = false) {
     const div = document.createElement("div");
@@ -434,106 +422,127 @@ document.addEventListener("DOMContentLoaded", () => {
     return div;
   }
 
-  // Kiểm tra xem tin nhắn cuối cùng đã di chuyển đủ xa để tạo tin nhắn mới chưa (chống đè khi đổi tab)
-  function canSpawnNext() {
-    if (visibleBlessings.length === 0) return true;
-    const lowest = visibleBlessings[visibleBlessings.length - 1];
-    const startY = blessingContainer.clientHeight - BLESSING_HEIGHT;
-    const distanceMoved = startY - lowest.y;
-    const msgHeight = Math.max(lowest.element.offsetHeight || 32, 28);
-    // Cần di chuyển ít nhất bằng chiều cao tin nhắn + 10px khoảng cách đệm
-    return distanceMoved >= msgHeight + 10;
-  }
-
-  // Thêm một tin nhắn vào phía dưới vùng hiển thị
-  function appendBlessing(item) {
+  // Thêm một tin nhắn vào luồng với toạ độ y xác định
+  function appendBlessingAt(item, targetY) {
     if (!track || !blessingContainer) return;
 
     const element = createBlessingElement(item.name, item.text, item.isUser);
+    track.appendChild(element);
 
-    const startY = blessingContainer.clientHeight - BLESSING_HEIGHT;
+    // Lấy chiều cao thực tế chính xác (fallback 36px nếu tab đang ẩn chưa layout)
+    const measured = element.offsetHeight;
+    const height = (measured && measured > 20) ? measured : 36;
 
     element.style.position = "absolute";
     element.style.left = "0";
     element.style.top = "0";
-    element.style.transform = `translate3d(0, ${startY}px, 0)`;
-
-    track.appendChild(element);
+    element.style.transform = `translate3d(0, ${targetY}px, 0)`;
 
     visibleBlessings.push({
       element,
-      y: startY,
+      y: targetY,
+      height,
+      needsMeasure: !measured || measured <= 20,
     });
   }
 
-  // Vòng lặp di chuyển liên tục
+  // Sinh tin nhắn tiếp theo nối tiếp tin nhắn trước với khoảng cách đồng đều 100%
+  function spawnNextBlessing(targetY) {
+    if (!blessingQueue.length) {
+      blessingQueue = [...defaultBlessings].reverse();
+    }
+    const nextItem = blessingQueue.shift();
+    if (nextItem) {
+      appendBlessingAt(nextItem, targetY);
+    }
+  }
+
+  // Đảm bảo đáy khung luôn được cấp tin nhắn nối tiếp nhau đúng khoảng cách chuẩn
+  function maintainBlessingStream() {
+    if (!blessingContainer) return;
+    const containerHeight = blessingContainer.clientHeight || 240;
+
+    let safetyCounter = 0;
+    while (safetyCounter < 4) {
+      safetyCounter++;
+      if (visibleBlessings.length === 0) {
+        // Chưa có tin nhắn nào: xuất hiện ngay ở đáy khung
+        spawnNextBlessing(containerHeight - 40);
+      } else {
+        const lowest = visibleBlessings[visibleBlessings.length - 1];
+        const lowestBottom = lowest.y + (lowest.height || 36);
+
+        // Khi đuôi tin nhắn thấp nhất đã dâng lên trên đáy một khoảng >= MESSAGE_GAP
+        if (lowestBottom + MESSAGE_GAP <= containerHeight) {
+          // Tin nhắn mới xuất hiện NGAY DƯỚI đuôi tin nhắn trước đúng MESSAGE_GAP
+          spawnNextBlessing(lowestBottom + MESSAGE_GAP);
+        } else {
+          // Đã đủ tin nhắn ở đáy, không cần sinh thêm
+          break;
+        }
+      }
+    }
+  }
+
+  // Vòng lặp di chuyển liên tục 60fps
   function animateBlessings(timestamp) {
     if (!track || !blessingContainer) return;
 
-    if (!lastFrameTime) lastFrameTime = timestamp;
+    if (!lastFrameTime || isTabHidden) {
+      lastFrameTime = timestamp;
+      animationFrameId = requestAnimationFrame(animateBlessings);
+      return;
+    }
 
-    // Giới hạn deltaTime tối đa 50ms để animation luôn mượt
-    const deltaTime = Math.min((timestamp - lastFrameTime) / 1000, 0.05);
-
+    // Giới hạn deltaTime tối đa 35ms (tránh nhảy bước lớn khi lag)
+    const deltaTime = Math.min((timestamp - lastFrameTime) / 1000, 0.035);
     lastFrameTime = timestamp;
 
-    // Di chuyển tất cả tin nhắn lên trên
+    // Di chuyển tất cả tin nhắn lên trên cùng một vận tốc
     visibleBlessings.forEach((item) => {
+      if (item.needsMeasure && item.element.offsetHeight > 20) {
+        item.height = item.element.offsetHeight;
+        item.needsMeasure = false;
+      }
       item.y -= BLESSING_SPEED * deltaTime;
-
       item.element.style.transform = `translate3d(0, ${item.y}px, 0)`;
 
-      // Mờ dần khi tin nhắn gần ra khỏi vùng hiển thị
-      const fadeDistance = 25;
-
+      // Mờ dần khi tin nhắn gần ra khỏi đỉnh vùng hiển thị
+      const fadeDistance = 30;
       if (item.y < fadeDistance) {
         item.element.style.opacity = Math.max(0, item.y / fadeDistance);
       }
     });
 
-    // Xóa tin nhắn đã đi khỏi màn hình
+    // Xóa tin nhắn đã ra khỏi đỉnh màn hình
     visibleBlessings = visibleBlessings.filter((item) => {
-      if (item.y < -BLESSING_HEIGHT) {
+      const height = item.height || 36;
+      if (item.y < -height - 10) {
         item.element.remove();
         return false;
       }
-
       return true;
     });
 
-    // Tạo tin nhắn mới theo chu kỳ nhưng BẮT BUỘC tin nhắn trước đã đi lên đủ xa
-    if (timestamp - lastSpawnTime >= BLESSING_INTERVAL && canSpawnNext()) {
-      if (!blessingQueue.length) {
-        // Hết danh sách thì phát lại các lời chúc mẫu
-        blessingQueue = [...defaultBlessings].reverse();
-      }
-
-      const nextBlessing = blessingQueue.shift();
-
-      if (nextBlessing) {
-        appendBlessing(nextBlessing);
-      }
-
-      lastSpawnTime = timestamp;
-    }
+    // Duy trì luồng tin nhắn nối tiếp nhau đều tăm tắp
+    maintainBlessingStream();
 
     animationFrameId = requestAnimationFrame(animateBlessings);
   }
 
-  // Xử lý khi người dùng đổi tab trình duyệt (Visibility Change & Focus)
+  // Xử lý khi người dùng đổi tab trình duyệt (chống nhảy cóc và chống lệch khoảng cách)
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      lastFrameTime = 0;
-    } else {
-      // Khi quay lại tab: đồng bộ lại mốc thời gian để không bị dồn bước
-      lastFrameTime = performance.now();
-      lastSpawnTime = performance.now();
-    }
+    isTabHidden = document.hidden;
+    lastFrameTime = 0;
   });
 
   window.addEventListener("focus", () => {
-    lastFrameTime = performance.now();
-    lastSpawnTime = performance.now();
+    isTabHidden = false;
+    lastFrameTime = 0;
+  });
+
+  window.addEventListener("blur", () => {
+    lastFrameTime = 0;
   });
 
   // Khởi động luồng lời chúc
@@ -546,18 +555,14 @@ document.addEventListener("DOMContentLoaded", () => {
     blessingQueue = [...allBlessings].reverse();
 
     lastFrameTime = 0;
-    lastSpawnTime = performance.now();
+    isTabHidden = false;
 
     if (animationFrameId !== null) {
       cancelAnimationFrame(animationFrameId);
     }
 
-    // Hiện ngay tin nhắn đầu tiên
-    const firstBlessing = blessingQueue.shift();
-
-    if (firstBlessing) {
-      appendBlessing(firstBlessing);
-    }
+    // Khởi tạo luồng tin nhắn ban đầu với khoảng cách đều
+    maintainBlessingStream();
 
     // Bắt đầu chuyển động
     animationFrameId = requestAnimationFrame(animateBlessings);
@@ -565,7 +570,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderBlessingStream();
 
-  // ----------------------------------------------------
+    // ----------------------------------------------------
   // 6. MODAL UTILITIES (SHOW / HIDE)
   // ----------------------------------------------------
   function openModal(modalId) {
@@ -683,7 +688,8 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       } catch (e) {}
 
-      appendBlessing(newBlessing);
+      blessingQueue.unshift(newBlessing);
+      maintainBlessingStream();
 
       closeModal("blessing-modal");
       showToast("Cảm ơn bạn đã gửi lời chúc ý nghĩa! 💕");
