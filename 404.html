@@ -19,6 +19,12 @@
                 try {
                     name = decodeURIComponent(rawSegment);
                 } catch(e) {}
+
+                // Lưu lại đường dẫn sạch để index.html khôi phục ngay trên thanh địa chỉ
+                try {
+                    sessionStorage.setItem('spa_redirect', '/' + name + (hash || ''));
+                } catch(e) {}
+
                 window.location.replace('/?to=' + encodeURIComponent(name) + (hash ? hash : ''));
             } else {
                 window.location.replace('/' + (search ? search : '') + (hash ? hash : ''));

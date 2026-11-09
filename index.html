@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi" class="__variable_d68128 __variable_f91d3f __variable_3838d2 __variable_c29a1d __variable_687ab3">
 
 <head>
@@ -25,11 +25,27 @@
     <link rel="stylesheet" href="css/bundle.css">
     <link rel="stylesheet" href="css/inline_styles.css">
     <link rel="stylesheet" href="css/custom.css">
-    <!-- Immediate Mobile Scaling Script -->
+    <!-- Immediate Mobile Scaling & Clean URL Restoration -->
     <script>
         (function () {
             var w = Math.min(window.innerWidth || 500, 500);
             document.documentElement.style.setProperty('--page-scale', w / 500);
+
+            // Giữ URL sạch dạng /Anh-Tuấn trên thanh địa chỉ ngay khi tải trang
+            try {
+                var redirectPath = sessionStorage.getItem('spa_redirect');
+                var urlParams = new URLSearchParams(window.location.search);
+                var to = urlParams.get('to') || urlParams.get('guest') || urlParams.get('name') || urlParams.get('ten');
+
+                if (redirectPath) {
+                    sessionStorage.removeItem('spa_redirect');
+                    window.__GUEST_RAW_PATH__ = redirectPath;
+                    window.history.replaceState(null, '', redirectPath);
+                } else if (to) {
+                    var slug = to.trim().replace(/\s+/g, '-');
+                    window.history.replaceState(null, '', '/' + slug + (window.location.hash || ''));
+                }
+            } catch (e) {}
         })();
     </script>
 </head>

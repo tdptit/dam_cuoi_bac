@@ -1,4 +1,4 @@
-﻿// ========================================================
+// ========================================================
 // CẤU HÌNH GOOGLE SHEET LƯU THÔNG TIN XÁC NHẬN THAM DỰ (RSVP)
 // Dán link Web App Google Apps Script của bạn vào đây:
 // ========================================================
@@ -88,6 +88,19 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       let rawName = "";
 
+      // 0. Đọc từ đường dẫn được chuyển tiếp từ 404 nếu có
+      if (window.__GUEST_RAW_PATH__) {
+        const segments = window.__GUEST_RAW_PATH__
+          .split("?")[0]
+          .split("#")[0]
+          .split("/")
+          .map((s) => decodeURIComponent(s).trim())
+          .filter((s) => Boolean(s));
+        if (segments.length > 0) {
+          rawName = segments[segments.length - 1];
+        }
+      }
+
       // 1. Đọc từ Query string (?to=... hoặc ?guest=... hoặc ?Anh-Tuấn)
       const urlParams = new URLSearchParams(window.location.search);
       rawName =
@@ -155,6 +168,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Cập nhật tiêu đề trang tương ứng
         document.title = `Phùng Bắc & Thu Hà – Kính mời ${cleanName}`;
+
+        // Giữ URL sạch dạng /Anh-Tuấn trên thanh địa chỉ thay vì hiện /?to=Anh-Tuấn
+        if (window.history && window.history.replaceState) {
+          const slug = cleanName.replace(/\s+/g, "-");
+          const targetPath = "/" + slug + (window.location.hash || "");
+          if (decodeURIComponent(window.location.pathname) !== "/" + slug || window.location.search) {
+            window.history.replaceState(null, document.title, targetPath);
+          }
+        }
       }
     } catch (e) {
       console.warn("Could not parse guest name from URL:", e);
