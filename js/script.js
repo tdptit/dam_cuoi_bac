@@ -840,6 +840,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       blessingQueue.unshift(newBlessing);
       maintainBlessingStream();
+      if (typeof updateWishesUI === "function") {
+        updateWishesUI();
+      }
 
       closeModal("blessing-modal");
       showToast("Cảm ơn bạn đã gửi lời chúc ý nghĩa! 💕");
@@ -859,6 +862,132 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  // ----------------------------------------------------
+  // 9.1. SỔ LƯU BÚT DƯỚI RSVP & MODAL XEM FULL LỜI CHÚC
+  // ----------------------------------------------------
+  const rsvpWishesListEl = document.getElementById("rsvp-wishes-list");
+  const allWishesCountBadge = document.getElementById("all-wishes-count-badge");
+  const modalAllWishesListEl = document.getElementById("modal-all-blessings-list");
+  const openAllWishesBtn = document.getElementById("open-all-wishes-btn");
+  const rsvpSendWishBtn = document.getElementById("rsvp-send-wish-btn");
+  const modalAddWishBtn = document.getElementById("modal-add-wish-btn");
+
+  const avatarGradients = [
+    "linear-gradient(135deg, #8b1e3f, #5d041e)",
+    "linear-gradient(135deg, #b45309, #78350f)",
+    "linear-gradient(135deg, #047857, #065f46)",
+    "linear-gradient(135deg, #1d4ed8, #1e40af)",
+    "linear-gradient(135deg, #7c3aed, #5b21b6)",
+    "linear-gradient(135deg, #be185d, #9d174d)",
+  ];
+
+  function getAvatarInitial(name) {
+    if (!name) return "♥";
+    const parts = name.trim().split(/\s+/);
+    const lastWord = parts[parts.length - 1];
+    return (lastWord.charAt(0) || "♥").toUpperCase();
+  }
+
+  function getAvatarGradient(name) {
+    let hash = 0;
+    for (let i = 0; i < (name || "").length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const idx = Math.abs(hash) % avatarGradients.length;
+    return avatarGradients[idx];
+  }
+
+  function updateWishesUI() {
+    // 1. Cập nhật số lượng
+    if (allWishesCountBadge) {
+      allWishesCountBadge.textContent = `(${allBlessings.length})`;
+    }
+
+    // 2. Render 3 lời chúc mới nhất dưới phần Xác nhận tham dự
+    if (rsvpWishesListEl) {
+      const top3 = allBlessings.slice(0, 3);
+      if (top3.length === 0) {
+        rsvpWishesListEl.innerHTML = `
+          <div style="text-align: center; color: #888; font-size: 13px; padding: 12px 0;">
+            Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc nhé! ✨
+          </div>
+        `;
+      } else {
+        rsvpWishesListEl.innerHTML = top3
+          .map((item) => {
+            const initial = getAvatarInitial(item.name);
+            const bg = getAvatarGradient(item.name);
+            const userBadge = item.isUser
+              ? '<span class="wish-badge-user">Mới</span>'
+              : "";
+            return `
+              <div class="rsvp-wish-card">
+                <div class="wish-avatar" style="background: ${bg};">${escapeHtml(initial)}</div>
+                <div class="wish-body">
+                  <div class="wish-header">
+                    <span class="wish-name">${escapeHtml(item.name)}</span>
+                    ${userBadge}
+                  </div>
+                  <div class="wish-text">${escapeHtml(item.text)}</div>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+    }
+
+    // 3. Render danh sách đầy đủ cho Modal Xem Full Lời Chúc
+    if (modalAllWishesListEl) {
+      modalAllWishesListEl.innerHTML = allBlessings
+        .map((item) => {
+          const initial = getAvatarInitial(item.name);
+          const bg = getAvatarGradient(item.name);
+          const userBadge = item.isUser
+            ? '<span class="wish-badge-user" style="margin-left:6px;">Khách mới gửi ✨</span>'
+            : "";
+          return `
+            <div class="modal-wish-card">
+              <div class="wish-avatar" style="background: ${bg};">${escapeHtml(initial)}</div>
+              <div class="wish-body">
+                <div class="wish-header">
+                  <span class="modal-wish-name">${escapeHtml(item.name)}</span>
+                  ${userBadge}
+                </div>
+                <div class="modal-wish-text">${escapeHtml(item.text)}</div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+  }
+
+  // Khởi chạy render ban đầu
+  updateWishesUI();
+
+  // Mở modal xem toàn bộ lời chúc
+  if (openAllWishesBtn) {
+    openAllWishesBtn.addEventListener("click", () => {
+      updateWishesUI();
+      openModal("all-blessings-modal");
+    });
+  }
+
+  // Mở modal viết lời chúc mới
+  if (rsvpSendWishBtn) {
+    rsvpSendWishBtn.addEventListener("click", () => {
+      openModal("blessing-modal");
+    });
+  }
+
+  if (modalAddWishBtn) {
+    modalAddWishBtn.addEventListener("click", () => {
+      closeModal("all-blessings-modal");
+      openModal("blessing-modal");
+    });
+  }
 
   // ----------------------------------------------------
   // 10. RSVP BUTTON & FORM HANDLER (TỰ ĐỘNG LƯU VÀO GOOGLE SHEET)
@@ -978,6 +1107,21 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("wedding_rsvp_submissions", JSON.stringify(stored));
       } catch (err) { }
 
+      // 3. Nếu khách có gửi kèm lời chúc, tự động bổ sung vào Sổ Lưu Bút
+      if (message) {
+        const rsvpBlessing = { name: guestName, text: message, isUser: true };
+        allBlessings.unshift(rsvpBlessing);
+        storedBlessings.unshift(rsvpBlessing);
+        try {
+          localStorage.setItem("wedding_blessings", JSON.stringify(storedBlessings));
+        } catch (e) { }
+        blessingQueue.unshift(rsvpBlessing);
+        maintainBlessingStream();
+        if (typeof updateWishesUI === "function") {
+          updateWishesUI();
+        }
+      }
+
       // Phục hồi nút submit
       if (btnTextEl) btnTextEl.textContent = "GỬI XÁC NHẬN";
       if (submitBtn) submitBtn.disabled = false;
@@ -1023,7 +1167,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ----------------------------------------------------
-  // 12. HEART BURST — CSS-animated DIVs (zero canvas lag)
+  // 12. WEDDING CELEBRATION — Pháo giấy kim tuyến & Cánh hoa hồng lễ đường
   // ----------------------------------------------------
   const heartsContainer = document.getElementById("hearts-container");
   const heartEmojis = ["❤️", "💖", "💕", "🌹", "✨", "💐", "🥰"];
@@ -1060,12 +1204,132 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // "Bắn tim" button
+  // Hiệu ứng pháo giấy kim tuyến vàng & cánh hoa hồng đám cưới sang trọng
+  const weddingConfettiColors = [
+    "#d4af37", // Gold kim loại
+    "#f59e0b", // Vàng hổ phách
+    "#fef08a", // Vàng champagne nhạt
+    "#9e1a36", // Đỏ nhung rượu vang
+    "#5d041e", // Đỏ đô chủ đạo
+    "#ffffff", // Trắng tinh khôi
+    "#fbcfe8", // Hồng pastel
+  ];
+
+  function triggerWeddingCelebration(originX, originY) {
+    if (!heartsContainer) return;
+
+    // 1. Pháo giấy kim tuyến 3D
+    const count = 36;
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement("div");
+      el.className = "wedding-confetti";
+
+      const color = weddingConfettiColors[Math.floor(Math.random() * weddingConfettiColors.length)];
+      const isCircle = Math.random() > 0.65;
+      const w = 6 + Math.random() * 6;
+      const h = isCircle ? w : 10 + Math.random() * 12;
+
+      el.style.backgroundColor = color;
+      el.style.width = w + "px";
+      el.style.height = h + "px";
+      el.style.borderRadius = isCircle ? "50%" : "2px";
+      el.style.left = originX + "px";
+      el.style.top = originY + "px";
+
+      const spreadX = (Math.random() - 0.5) * (window.innerWidth ? Math.min(window.innerWidth * 0.85, 360) : 320);
+      const velocity = 260 + Math.random() * 220;
+      const peakY = -velocity;
+      const fallY = peakY + 220 + Math.random() * 260;
+      const groundY = fallY + 180 + Math.random() * 280;
+      const drift = (Math.random() - 0.5) * 80;
+
+      const dur = 2.3 + Math.random() * 0.7;
+      const delay = Math.random() * 0.18;
+
+      el.style.setProperty("--tx-mid", spreadX * 0.6 + "px");
+      el.style.setProperty("--ty-peak", peakY + "px");
+      el.style.setProperty("--tx-end", spreadX + "px");
+      el.style.setProperty("--ty-fall", fallY + "px");
+      el.style.setProperty("--ty-ground", groundY + "px");
+      el.style.setProperty("--drift", drift + "px");
+      el.style.setProperty("--rz-mid", (Math.random() * 360) + "deg");
+      el.style.setProperty("--rz-fall", (Math.random() * 720) + "deg");
+      el.style.setProperty("--rz-end", (Math.random() * 1080) + "deg");
+
+      el.style.animationDuration = dur + "s";
+      el.style.animationDelay = delay + "s";
+
+      heartsContainer.appendChild(el);
+      setTimeout(() => el.remove(), (dur + delay + 0.1) * 1000);
+    }
+
+    // 2. Cánh hoa hồng bay bổng
+    const petalCount = 14;
+    for (let i = 0; i < petalCount; i++) {
+      const petal = document.createElement("div");
+      petal.className = "wedding-petal";
+
+      const size = 12 + Math.random() * 9;
+      petal.style.width = size + "px";
+      petal.style.height = (size * 1.3) + "px";
+      petal.style.left = originX + "px";
+      petal.style.top = originY + "px";
+
+      const spreadX = (Math.random() - 0.5) * 300;
+      const peakY = -(180 + Math.random() * 170);
+      const groundY = 240 + Math.random() * 320;
+
+      const dur = 2.7 + Math.random() * 0.8;
+      const delay = Math.random() * 0.25;
+
+      petal.style.setProperty("--tx-mid", spreadX * 0.5 + "px");
+      petal.style.setProperty("--ty-peak", peakY + "px");
+      petal.style.setProperty("--tx-end", spreadX + "px");
+      petal.style.setProperty("--ty-ground", groundY + "px");
+
+      petal.style.animationDuration = dur + "s";
+      petal.style.animationDelay = delay + "s";
+
+      heartsContainer.appendChild(petal);
+      setTimeout(() => petal.remove(), (dur + delay + 0.1) * 1000);
+    }
+
+    // 3. Ánh sao kim tuyến lung linh
+    const sparkleCount = 8;
+    const sparkleChars = ["✨", "✦", "★", "💖"];
+    for (let i = 0; i < sparkleCount; i++) {
+      const sp = document.createElement("span");
+      sp.className = "wedding-sparkle";
+      sp.textContent = sparkleChars[Math.floor(Math.random() * sparkleChars.length)];
+      sp.style.left = originX + "px";
+      sp.style.top = originY + "px";
+
+      const sx = (Math.random() - 0.5) * 140;
+      const sy = -(60 + Math.random() * 120);
+
+      sp.style.setProperty("--tx", sx + "px");
+      sp.style.setProperty("--ty", sy + "px");
+      sp.style.fontSize = (14 + Math.random() * 12) + "px";
+
+      const dur = 1.4 + Math.random() * 0.5;
+      sp.style.animationDuration = dur + "s";
+
+      heartsContainer.appendChild(sp);
+      setTimeout(() => sp.remove(), (dur + 0.1) * 1000);
+    }
+
+    // 4. Lời chúc thông báo trang nhã
+    if (typeof showToast === "function") {
+      showToast("Cảm ơn lời chúc tốt đẹp của bạn! 🥂✨");
+    }
+  }
+
+  // Nút "Chúc mừng"
   const burstBtn = document.getElementById("animation-gift-preview-btn");
   if (burstBtn) {
     burstBtn.addEventListener("click", () => {
       const rect = burstBtn.getBoundingClientRect();
-      burstHearts(rect.left + rect.width / 2, rect.top, 25);
+      triggerWeddingCelebration(rect.left + rect.width / 2, rect.top);
     });
   }
 

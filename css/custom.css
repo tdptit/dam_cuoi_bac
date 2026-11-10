@@ -1,4 +1,4 @@
-﻿/* ========================================================
+/* ========================================================
    CUSTOM STYLES FOR THIỆP CƯỚI 221 PRE (ONLINE WEDDING)
    ======================================================== */
 * {
@@ -330,33 +330,47 @@ body.wedding-ready #page-root-container {
   color: var(--primary-color);
 }
 
-/* Bắn tim button */
+/* Nút Chúc mừng đám cưới */
 #animation-gift-preview-btn {
   display: flex;
   align-items: center;
-  gap: 4px;
-  background: #fff0f3;
-  color: #d6336c;
+  gap: 5px;
+  background: linear-gradient(135deg, #fff9f0 0%, #fff1f2 100%);
+  color: #8b1e3f;
   font-size: 13px;
   font-weight: 600;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 20px;
-  border: 1px solid #ffccd5;
+  border: 1px solid rgba(139, 30, 63, 0.22);
+  box-shadow: 0 2px 8px rgba(139, 30, 63, 0.08);
   cursor: pointer;
   transition:
-    transform 0.15s,
-    background 0.2s;
+    transform 0.15s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
   user-select: none;
 }
 
 #animation-gift-preview-btn:hover {
-  background: #ffe3e8;
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe4e6 100%);
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 4px 12px rgba(139, 30, 63, 0.15);
 }
 
-#animation-gift-preview-btn img {
-  width: 20px;
-  height: 20px;
+#animation-gift-preview-btn:active {
+  transform: scale(0.95);
+}
+
+#animation-gift-preview-btn .bar-celebrate-icon {
+  width: 16px;
+  height: 16px;
+  color: #c99738;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+#animation-gift-preview-btn:hover .bar-celebrate-icon {
+  transform: rotate(-12deg) scale(1.15);
 }
 
 /* Gift button (Hộp mừng cưới) */
@@ -530,15 +544,15 @@ body.wedding-ready #page-root-container {
     grid-row: 3;
   }
 
-  #zen-toolbar.block .toolbar .bar-items .bar-right #animation-gift-preview-btn img {
-    box-sizing: border-box;
-    width: 56px;
-    height: 56px;
-    flex: 0 0 56px;
-    padding: 12px;
+  #zen-toolbar.block .toolbar .bar-items .bar-right #animation-gift-preview-btn .bar-celebrate-icon {
+    box-sizing: content-box;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    padding: 16px;
     border-radius: 50%;
     background: #f0f0f2;
-    object-fit: contain;
+    color: #c99738;
   }
 
   #zen-toolbar.block .toolbar .bar-items .bar-right #animation-gift-preview-btn .truncate {
@@ -809,6 +823,93 @@ body.wedding-ready #page-root-container {
   100% {
     opacity: 0;
     transform: translate3d(calc(var(--tx, 0px) * 1.5), var(--ty-end, -250px), 0) scale(1) rotate(calc(var(--rot, 15deg) * 2));
+  }
+}
+
+/* ========================================================
+   WEDDING CONFETTI, ROSE PETALS & SPARKLES (Sang Trọng)
+   ======================================================== */
+.wedding-confetti {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform, opacity;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  animation: weddingConfettiBlast 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes weddingConfettiBlast {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(0.5);
+  }
+  25% {
+    opacity: 1;
+    transform: translate3d(var(--tx-mid), var(--ty-peak), 0) rotateX(200deg) rotateY(180deg) rotateZ(var(--rz-mid)) scale(1.1);
+  }
+  65% {
+    opacity: 0.95;
+    transform: translate3d(var(--tx-end), var(--ty-fall), 0) rotateX(460deg) rotateY(360deg) rotateZ(var(--rz-fall)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--tx-end) + var(--drift)), var(--ty-ground), 0) rotateX(720deg) rotateY(540deg) rotateZ(var(--rz-end)) scale(0.7);
+  }
+}
+
+.wedding-petal {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  border-radius: 65% 15% 65% 35%;
+  background: radial-gradient(circle at 35% 35%, #e11d48, #881337);
+  box-shadow: 0 1px 3px rgba(93, 4, 30, 0.25);
+  will-change: transform, opacity;
+  animation: weddingPetalFlutter 2.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes weddingPetalFlutter {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.4);
+  }
+  30% {
+    opacity: 1;
+    transform: translate3d(var(--tx-mid), var(--ty-peak), 0) rotate(140deg) scale(1.15);
+  }
+  75% {
+    opacity: 0.9;
+    transform: translate3d(var(--tx-end), calc(var(--ty-peak) + 200px), 0) rotate(260deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--tx-end) + 20px), var(--ty-ground), 0) rotate(420deg) scale(0.75);
+  }
+}
+
+.wedding-sparkle {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  color: #c99738;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(201, 151, 56, 0.8);
+  will-change: transform, opacity;
+  animation: weddingSparklePop 1.5s ease-out forwards;
+}
+
+@keyframes weddingSparklePop {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0);
+  }
+  35% {
+    opacity: 1;
+    transform: translate3d(var(--tx), var(--ty), 0) scale(1.3);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--tx) * 1.3), calc(var(--ty) * 1.3), 0) scale(0.2);
   }
 }
 
@@ -1836,9 +1937,9 @@ body.wedding-ready #page-root-container {
     gap: 3px;
   }
 
-  #animation-gift-preview-btn img {
-    width: 17px;
-    height: 17px;
+  #animation-gift-preview-btn .bar-celebrate-icon {
+    width: 14px;
+    height: 14px;
   }
 
   .bar-gift-btn {
@@ -2795,4 +2896,227 @@ body.wedding-ready #page-root-container {
 
 .rsvp-btn-resubmit:hover {
   background: #fdf2f4;
+}
+
+/* ========================================================
+   SỔ LƯU BÚT & LỜI CHÚC DƯỚI PHẦN XÁC NHẬN THAM DỰ
+   ======================================================== */
+.rsvp-wishes-box {
+  margin-top: 14px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  box-shadow: 0 10px 30px rgba(93, 4, 30, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(93, 4, 30, 0.15);
+  font-family: "Lora Regular", Georgia, serif;
+  box-sizing: border-box;
+}
+
+.wishes-box-header {
+  text-align: center;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(93, 4, 30, 0.18);
+}
+
+.wishes-box-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #5d041e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wishes-box-title svg {
+  color: #5d041e;
+  width: 17px;
+  height: 17px;
+}
+
+.wishes-box-sub {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #666666;
+  font-style: italic;
+}
+
+.rsvp-wishes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.rsvp-wish-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 7px 10px;
+  background: #fffaf7;
+  border-radius: 10px;
+  border: 1px solid rgba(93, 4, 30, 0.08);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.rsvp-wish-card:hover {
+  background: #fff4ef;
+  transform: translateX(2px);
+}
+
+.wish-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b1e3f, #5d041e);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(93, 4, 30, 0.2);
+}
+
+.wish-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.wish-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 1px;
+}
+
+.wish-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #5d041e;
+}
+
+.wish-badge-user {
+  font-size: 9.5px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: #ffe4e6;
+  color: #9e1a36;
+  font-weight: 600;
+}
+
+.wish-text {
+  font-size: 12.5px;
+  color: #444444;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wishes-box-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(93, 4, 30, 0.15);
+}
+
+.wishes-btn-more {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 10px;
+  background: #fbf5f2;
+  border: 1px solid rgba(93, 4, 30, 0.2);
+  border-radius: 20px;
+  color: #5d041e;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.wishes-btn-more:hover {
+  background: #f5eae4;
+  border-color: #5d041e;
+}
+
+.wishes-count-badge {
+  font-size: 11.5px;
+  opacity: 0.85;
+}
+
+.wishes-btn-write {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--primary-color, #5d041e);
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+  font-family: inherit;
+}
+
+.wishes-btn-write:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+/* Modal Full Sổ Lưu Bút */
+.modal-blessings-scrollable {
+  max-height: 52vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 4px;
+}
+
+.modal-blessings-scrollable::-webkit-scrollbar {
+  width: 5px;
+}
+
+.modal-blessings-scrollable::-webkit-scrollbar-thumb {
+  background: rgba(93, 4, 30, 0.2);
+  border-radius: 4px;
+}
+
+.modal-wish-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #faf6f4;
+  border-radius: 12px;
+  border-left: 3px solid #8b1e3f;
+}
+
+.modal-wish-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #5d041e;
+  margin-bottom: 2px;
+}
+
+.modal-wish-text {
+  font-size: 13.5px;
+  color: #333333;
+  line-height: 1.5;
+  word-break: break-word;
 }
