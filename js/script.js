@@ -1338,31 +1338,86 @@ document.addEventListener("DOMContentLoaded", () => {
   // ----------------------------------------------------
   const lightbox = document.getElementById("wedding-lightbox");
   const lightboxImg = document.getElementById("lightbox-image");
+  const lightboxCloseBtn = document.getElementById("lightbox-close");
 
-  document.querySelectorAll(".photo-bg-wrap").forEach((wrap) => {
-    wrap.style.cursor = "pointer";
-    wrap.addEventListener("click", () => {
-      const bgImage = wrap.style.backgroundImage;
-      if (bgImage && bgImage !== "none") {
-        const match = bgImage.match(/url\(["']?([^"']+)["']?\)/);
-        if (match && match[1]) {
-          let fullUrl = match[1];
-          // remove width/crop parameters for full resolution
-          fullUrl = fullUrl
-            .replace(/(\?|&)width=\d+/, "")
-            .replace(/(\?|&)crop=[^&]+/, "");
-          if (lightboxImg) lightboxImg.src = fullUrl;
-          if (lightbox) lightbox.classList.add("active");
-        }
+  const closeLightbox = () => {
+    if (!lightbox) return;
+    lightbox.classList.remove("active");
+    setTimeout(() => {
+      if (!lightbox.classList.contains("active") && lightboxImg) {
+        lightboxImg.src = "";
       }
+    }, 300);
+  };
+
+  const openLightbox = (imgUrl) => {
+    if (!lightbox || !lightboxImg || !imgUrl) return;
+    // Preload image before displaying to prevent broken image / "?" icon
+    const preloader = new Image();
+    preloader.onload = () => {
+      lightboxImg.src = imgUrl;
+      lightbox.classList.add("active");
+    };
+    preloader.onerror = () => {
+      console.warn("Could not load image for lightbox:", imgUrl);
+    };
+    preloader.src = imgUrl;
+  };
+
+  const extractBgUrl = (wrap) => {
+    if (!wrap) return null;
+    const bg = wrap.style.backgroundImage || window.getComputedStyle(wrap).backgroundImage;
+    if (!bg || bg === "none") return null;
+    const match = bg.match(/url\(["']?([^"']+)["']?\)/);
+    if (!match || !match[1]) return null;
+    return match[1];
+  };
+
+  // Only attach lightbox to actual wedding gallery photos (Carousel & Album grid)
+  // Avoid attaching to decorative card frames, envelope templates, or section banners
+  const gallerySelectors = [
+    "#our-love-carousel .love-slide-card",
+    '[data-node-id="XLbd5vWc6e"] .photo-bg-wrap',
+    '[data-node-id="03mmnniHWa"] .photo-bg-wrap',
+    '[data-node-id="g5IV5uiGLc"] .photo-bg-wrap',
+    '[data-node-id="Q1YmzXFFjL"] .photo-bg-wrap',
+    '[data-node-id="ypuPzT_Oc4"] .photo-bg-wrap',
+    '[data-node-id="F03liH8_uX"] .photo-bg-wrap',
+  ];
+
+  gallerySelectors.forEach((sel) => {
+    document.querySelectorAll(sel).forEach((wrap) => {
+      wrap.style.cursor = "pointer";
+      wrap.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const url = extractBgUrl(wrap);
+        if (url) {
+          openLightbox(url);
+        }
+      });
     });
   });
 
   if (lightbox) {
-    lightbox.addEventListener("click", () => {
-      lightbox.classList.remove("active");
+    lightbox.addEventListener("click", (e) => {
+      if (e.target !== lightboxImg) {
+        closeLightbox();
+      }
     });
   }
+
+  if (lightboxCloseBtn) {
+    lightboxCloseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeLightbox();
+    });
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && lightbox && lightbox.classList.contains("active")) {
+      closeLightbox();
+    }
+  });
 
   // ----------------------------------------------------
   // 14. GOOGLE MAPS BUTTONS ("XEM CHỈ ĐƯỜNG")
