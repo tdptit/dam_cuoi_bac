@@ -1420,6 +1420,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // Bấm vào ảnh mã QR trong Hộp Mừng Cưới để phóng to toàn màn hình
+  document.querySelectorAll(".bank-qr-img").forEach((img) => {
+    img.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (img.src) {
+        openLightbox(img.src);
+      }
+    });
+  });
+
+  document.querySelectorAll(".qr-zoom-hint").forEach((hint) => {
+    hint.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const parent = hint.closest(".bank-card");
+      const img = parent ? parent.querySelector(".bank-qr-img") : null;
+      if (img && img.src) {
+        openLightbox(img.src);
+      }
+    });
+  });
+
   if (lightbox) {
     lightbox.addEventListener("click", (e) => {
       if (e.target !== lightboxImg) {
