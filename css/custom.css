@@ -3144,3 +3144,13 @@ body.wedding-ready #page-root-container {
   line-height: 1.5;
   word-break: break-word;
 }
+
+/* GPU hardware acceleration for smooth 60fps photo rendering & scrolling */
+.photo-component,
+.photo-bg-wrap {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  image-rendering: -webkit-optimize-contrast;
+}

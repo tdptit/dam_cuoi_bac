@@ -359,6 +359,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   generateOpeningHearts();
 
+  function preloadAllPhotos() {
+    const photoUrls = [
+      "anh_cuoi/anh_1.jpg", "anh_cuoi/anh_2.jpg", "anh_cuoi/anh_3.jpg",
+      "anh_cuoi/anh_4.jpg", "anh_cuoi/anh_5.jpg", "anh_cuoi/anh_6.jpg",
+      "anh_cuoi/anh_7.jpg", "anh_cuoi/anh_8.jpg", "anh_cuoi/anh_9.jpg",
+      "anh_cuoi/anh_10.jpg", "anh_cuoi/anh_11.jpg", "anh_cuoi/anh_12.jpg",
+      "anh_cuoi/anh_13.jpg", "anh_cuoi/anh_14.jpg"
+    ];
+    photoUrls.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+  }
+
+  // Preload ảnh sớm để khi mở thiệp và cuộn sẽ hoàn toàn mượt mà 60fps
+  if (document.readyState === "complete") {
+    preloadAllPhotos();
+  } else {
+    window.addEventListener("load", preloadAllPhotos);
+  }
+
   function openEnvelope() {
     if (
       !envelopeOverlay ||
@@ -376,6 +397,7 @@ document.addEventListener("DOMContentLoaded", () => {
       envelopeOverlay.style.display = "none";
       document.body.classList.add("wedding-ready");
       playAudio();
+      preloadAllPhotos();
       startInvitationAutoScroll();
     }
 
